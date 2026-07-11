@@ -38,6 +38,15 @@ const TONES = {
  */
 export function StatCard({ label, value, currency, tone = 'cyan', icon, breakdown, children }) {
   const t = TONES[tone] || TONES.cyan;
+  const formatted = formatCurrency(value, currency);
+  // El tamaño se adapta a la longitud para que el monto quepa en UNA sola línea.
+  const len = formatted.length;
+  const valueSize =
+    len >= 15
+      ? 'text-[1.375rem] sm:text-[1.625rem] xl:text-[1.875rem]'
+      : len >= 12
+        ? 'text-[1.625rem] sm:text-[1.875rem] xl:text-[2.125rem]'
+        : 'text-[2rem] sm:text-[2.25rem] xl:text-[2.5rem]';
   return (
     <Card accent={t.accent} status={t.light} className="overflow-hidden">
       <div className="flex justify-between items-start mb-4 pl-4">
@@ -46,11 +55,12 @@ export function StatCard({ label, value, currency, tone = 'cyan', icon, breakdow
       </div>
       <h3
         className={cn(
-          'font-display-lg text-[1.75rem] sm:text-[2rem] xl:text-[2.5rem] leading-tight mb-2 tabular-nums break-words',
+          'font-display-lg leading-tight mb-2 tabular-nums whitespace-nowrap',
+          valueSize,
           t.value,
         )}
       >
-        {formatCurrency(value, currency)}
+        {formatted}
       </h3>
       {breakdown && (
         <div className="flex gap-4 border-t border-black/5 pt-4 mt-4">
