@@ -10,7 +10,10 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 module.exports = defineConfig({
   testDir: './e2e',
-  timeout: 45_000,
+  timeout: 60_000,
+  // Timeout amplio para aserciones: en dev, la primera compilación on-demand
+  // de cada ruta puede tardar varios segundos.
+  expect: { timeout: 15_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

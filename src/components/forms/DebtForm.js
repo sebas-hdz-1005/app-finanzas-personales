@@ -10,11 +10,12 @@ import { validateWith } from '@/utils/validation';
 import { useTranslation } from '@/i18n/LanguageProvider';
 import { debtTypeOptions } from '@/i18n/options';
 
-export function DebtForm({ initialValues, onSubmit, onCancel, submitting }) {
+export function DebtForm({ accounts = [], initialValues, onSubmit, onCancel, submitting }) {
   const { t, lang } = useTranslation();
   const [values, setValues] = useState(() => ({
     name: initialValues?.name || '',
     type: initialValues?.type || 'credit_card',
+    accountId: initialValues?.accountId || '',
     initialAmount: initialValues?.initialAmount != null ? String(initialValues.initialAmount) : '',
     currentAmount: initialValues?.currentAmount != null ? String(initialValues.currentAmount) : '',
     monthlyPayment: initialValues?.monthlyPayment != null ? String(initialValues.monthlyPayment) : '',
@@ -44,6 +45,17 @@ export function DebtForm({ initialValues, onSubmit, onCancel, submitting }) {
           <Select id="debt-type" value={values.type} onChange={(e) => setField('type', e.target.value)} options={debtTypeOptions(t)} />
         </FormField>
       </div>
+      <FormField label={t('forms.debtAccount')} htmlFor="debt-account" error={errors.accountId} hint={t('forms.debtAccountHint')}>
+        <Select
+          id="debt-account"
+          value={values.accountId}
+          onChange={(e) => setField('accountId', e.target.value)}
+          options={[
+            { value: '', label: t('forms.debtAccountNone') },
+            ...accounts.map((a) => ({ value: a.id, label: a.name })),
+          ]}
+        />
+      </FormField>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField label={t('forms.initialAmount')} htmlFor="debt-initial" error={errors.initialAmount} required>
           <Input id="debt-initial" type="number" step="0.01" inputMode="decimal" value={values.initialAmount} onChange={(e) => setField('initialAmount', e.target.value)} placeholder="0.00" error={errors.initialAmount} />

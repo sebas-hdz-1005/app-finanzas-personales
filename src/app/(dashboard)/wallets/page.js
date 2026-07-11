@@ -7,7 +7,11 @@ import { useTranslation } from '@/i18n/LanguageProvider';
 import { accountTypeLabel } from '@/i18n/options';
 import { emitDataChanged } from '@/hooks/useDataChanged';
 import { accountService } from '@/services';
-import { computeAccountBalance, computeNetWorth } from '@/services/financeService';
+import {
+  computeAccountBalance,
+  computeNetWorthWithDebts,
+  debtOwedForAccount,
+} from '@/services/financeService';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
@@ -41,8 +45,8 @@ export default function WalletsPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const netWorth = useMemo(
-    () => computeNetWorth(data.accounts, data.transactions),
-    [data.accounts, data.transactions],
+    () => computeNetWorthWithDebts(data.accounts, data.transactions, data.debts),
+    [data.accounts, data.transactions, data.debts],
   );
   const txCountByAccount = useMemo(() => {
     const map = new Map();
@@ -134,8 +138,12 @@ export default function WalletsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
           {data.accounts.map((acc) => {
             const balance = computeAccountBalance(acc, data.transactions);
+            const owed = debtOwedForAccount(acc.id, data.debts);
+            const available = Math.round((balance - owed) * 100) / 100;
+            const isCredit = acc.type === 'credit';
+            const showDebt = isCredit || owed > 0;
             return (
-              <Card key={acc.id} className="flex flex-col">
+              <Card key={acc.id} accent={isCredit ? 'error' : 'none'} className="flex flex-col">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Icon name={TYPE_ICONS[acc.type] || 'account_balance'} className="text-primary-fixed" />
@@ -167,8 +175,29 @@ export default function WalletsPage() {
                   {typeLabel(acc.type)} · {acc.currency}
                 </p>
                 <div className="mt-auto pt-4 border-t border-black/5">
-                  <p className="text-[10px] font-label-caps text-outline uppercase">{t('wallets.currentBalance')}</p>
-                  <MoneyText value={balance} currency={acc.currency} tone="auto" className="text-headline-md break-words" />
+                  {showDebt ? (
+                    <>
+                      <p className="text-[10px] font-label-caps text-outline uppercase">
+                        {isCredit ? t('wallets.available') : t('wallets.currentBalance')}
+                      </p>
+                      <MoneyText value={available} currency={acc.currency} tone="auto" className="text-headline-md break-words" />
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-data-mono">
+                        <span className="text-outline">
+                          {isCredit ? t('wallets.creditLimit') : t('wallets.balance')}:{' '}
+                          <MoneyText value={balance} currency={acc.currency} tone="neutral" className="text-[12px]" />
+                        </span>
+                        <span className="text-error">
+                          {t('wallets.owed')}:{' '}
+                          <MoneyText value={owed} currency={acc.currency} tone="expense" className="text-[12px]" />
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[10px] font-label-caps text-outline uppercase">{t('wallets.currentBalance')}</p>
+                      <MoneyText value={balance} currency={acc.currency} tone="auto" className="text-headline-md break-words" />
+                    </>
+                  )}
                   <p className="text-[11px] text-outline mt-1 font-data-mono">
                     {t('wallets.movementsCount', { count: txCountByAccount.get(acc.id) || 0 })}
                   </p>

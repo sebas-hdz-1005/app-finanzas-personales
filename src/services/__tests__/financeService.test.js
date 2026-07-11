@@ -12,6 +12,9 @@ import {
   computeDebtPlan,
   computeDebtsSummary,
   computeMonthlyComparison,
+  debtOwedForAccount,
+  computeAccountAvailable,
+  computeNetWorthWithDebts,
   monthsUntil,
   withRunningBalance,
 } from '@/services/financeService';
@@ -210,6 +213,35 @@ describe('computeDebtPlan', () => {
     expect(s.totalOwed).toBe(1300);
     expect(s.totalMonthly).toBe(300);
     expect(s.count).toBe(2);
+  });
+});
+
+describe('deudas ligadas a cuentas', () => {
+  const debts = [
+    { id: 'd1', accountId: 'a1', currentAmount: 7000000 },
+    { id: 'd2', accountId: 'a1', currentAmount: 1000000 },
+    { id: 'd3', currentAmount: 500000 }, // sin cuenta
+  ];
+
+  it('debtOwedForAccount suma sólo las deudas de esa cuenta', () => {
+    expect(debtOwedForAccount('a1', debts)).toBe(8000000);
+    expect(debtOwedForAccount('a2', debts)).toBe(0);
+    expect(debtOwedForAccount('', debts)).toBe(0);
+  });
+
+  it('computeAccountAvailable resta la deuda al cupo', () => {
+    const card = { id: 'a1', type: 'credit', initialBalance: 10000000 };
+    // cupo 10M − deuda 8M = 2M disponible
+    expect(computeAccountAvailable(card, [], debts)).toBe(2000000);
+  });
+
+  it('net worth excluye el cupo de tarjetas y resta todas las deudas', () => {
+    const accounts = [
+      { id: 'chk', type: 'checking', initialBalance: 3000000 },
+      { id: 'a1', type: 'credit', initialBalance: 10000000 },
+    ];
+    // activos = 3M (checking); crédito excluido. Deudas = 8.5M → neto -5.5M
+    expect(computeNetWorthWithDebts(accounts, [], debts)).toBe(-5500000);
   });
 });
 

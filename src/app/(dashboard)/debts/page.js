@@ -44,6 +44,10 @@ export default function DebtsPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const summary = useMemo(() => computeDebtsSummary(data.debts), [data.debts]);
+  const accountsById = useMemo(
+    () => new Map(data.accounts.map((a) => [a.id, a])),
+    [data.accounts],
+  );
 
   const monthsText = (m) => (m === 1 ? t('debts.oneMonth') : t('debts.monthsValue', { months: m }));
 
@@ -141,7 +145,12 @@ export default function DebtsPage() {
                       </div>
                       <div className="min-w-0">
                         <h3 className="font-headline-md text-headline-md text-on-surface truncate">{debt.name}</h3>
-                        <p className="font-label-caps text-[10px] text-outline uppercase">{debtTypeLabel(t, debt.type)}</p>
+                        <p className="font-label-caps text-[10px] text-outline uppercase truncate">
+                          {debtTypeLabel(t, debt.type)}
+                          {debt.accountId && accountsById.get(debt.accountId)
+                            ? ` · ${accountsById.get(debt.accountId).name}`
+                            : ''}
+                        </p>
                       </div>
                     </div>
                     <div className="flex gap-2 shrink-0">
@@ -204,7 +213,7 @@ export default function DebtsPage() {
       )}
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? t('debts.editDebt') : t('debts.newDebt')}>
-        <DebtForm initialValues={editing} onSubmit={handleSubmit} onCancel={() => setFormOpen(false)} submitting={submitting} />
+        <DebtForm accounts={data.accounts} initialValues={editing} onSubmit={handleSubmit} onCancel={() => setFormOpen(false)} submitting={submitting} />
       </Modal>
 
       <ConfirmDialog

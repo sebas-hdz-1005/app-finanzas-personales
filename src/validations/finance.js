@@ -52,6 +52,7 @@ export const goalSchema = z.object({
 export const debtSchema = z.object({
   name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
   type: z.enum(['credit_card', 'loan', 'mortgage', 'personal', 'other']).default('credit_card'),
+  accountId: z.string().optional().or(z.literal('')),
   initialAmount: money.refine((v) => v > 0, 'El monto inicial debe ser mayor a 0'),
   currentAmount: money.refine((v) => v >= 0, 'No puede ser negativo'),
   monthlyPayment: money.refine((v) => v > 0, 'La cuota mensual debe ser mayor a 0'),

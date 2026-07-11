@@ -94,6 +94,38 @@ export function computeNetWorth(accounts = [], transactions = []) {
   );
 }
 
+/** Suma del saldo adeudado de las deudas ligadas a una cuenta. */
+export function debtOwedForAccount(accountId, debts = []) {
+  if (!accountId) return 0;
+  return round2(
+    debts
+      .filter((d) => d.accountId === accountId)
+      .reduce((acc, d) => acc + (Number(d.currentAmount) || 0), 0),
+  );
+}
+
+/**
+ * Saldo disponible de una cuenta descontando la deuda ligada.
+ * Para tarjetas de crédito, el saldo del cupo menos lo adeudado.
+ */
+export function computeAccountAvailable(account, transactions = [], debts = []) {
+  const balance = computeAccountBalance(account, transactions);
+  const owed = debtOwedForAccount(account.id, debts);
+  return round2(balance - owed);
+}
+
+/**
+ * Patrimonio neto realista: activos (cuentas que NO son de crédito) menos
+ * TODAS las deudas. El cupo de las tarjetas no cuenta como dinero propio.
+ */
+export function computeNetWorthWithDebts(accounts = [], transactions = [], debts = []) {
+  const assets = accounts
+    .filter((a) => a.type !== 'credit')
+    .reduce((acc, a) => acc + computeAccountBalance(a, transactions), 0);
+  const totalDebt = debts.reduce((acc, d) => acc + (Number(d.currentAmount) || 0), 0);
+  return round2(assets - totalDebt);
+}
+
 /**
  * Flujo mensual (Spending Flux) de los últimos `months` meses.
  * @param {Array<object>} transactions

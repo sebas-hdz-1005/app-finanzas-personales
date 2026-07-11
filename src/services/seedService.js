@@ -64,6 +64,18 @@ export async function seedUserData(userId, opts = {}) {
     });
   }
 
+  // Tarjeta de crédito de ejemplo (con cupo), para vincularle la deuda.
+  let creditAccount = accounts.find((a) => a.type === 'credit');
+  if (!creditAccount) {
+    creditAccount = await accountRepository.create(userId, {
+      name: 'Tarjeta Nu',
+      type: 'credit',
+      initialBalance: 20000, // cupo
+      currentBalance: 20000,
+      currency,
+    });
+  }
+
   // Si ya hay transacciones, no duplicar.
   const existingTx = await transactionRepository.list(userId);
   if (existingTx.length > 0) return { seeded: false };
@@ -137,9 +149,10 @@ export async function seedUserData(userId, opts = {}) {
   const existingDebts = await debtRepository.list(userId);
   if (existingDebts.length === 0) {
     await debtRepository.create(userId, {
-      name: 'Tarjeta de crédito',
+      name: 'Tarjeta Nu',
       type: 'credit_card',
-      initialAmount: 20000,
+      accountId: creditAccount.id,
+      initialAmount: 15000,
       currentAmount: 13936,
       monthlyPayment: 2000,
       interestRate: 24,
