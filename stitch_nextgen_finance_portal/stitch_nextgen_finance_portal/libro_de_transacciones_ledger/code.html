@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEON_LEDGER | Transactions Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Sora:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#00696f",
+            "on-secondary-container": "#556d00",
+            "primary-fixed": "#74f5ff",
+            "surface-variant": "#303444",
+            "surface-container-lowest": "#090e1c",
+            "primary-fixed-dim": "#00dbe7",
+            "error": "#ffb4ab",
+            "surface-dim": "#0e1321",
+            "surface-tint": "#00dbe7",
+            "primary-container": "#00f2ff",
+            "on-background": "#dee2f6",
+            "on-surface": "#dee2f6",
+            "surface": "#0e1321",
+            "outline-variant": "#3a494b",
+            "inverse-on-surface": "#2b303f",
+            "surface-container": "#1a1f2e",
+            "secondary-container": "#c3f400",
+            "surface-container-highest": "#303444",
+            "on-tertiary-fixed": "#410003",
+            "tertiary-fixed-dim": "#ffb3ac",
+            "error-container": "#93000a",
+            "tertiary-container": "#ffd0cb",
+            "background": "#0e1321",
+            "outline": "#849495",
+            "surface-container-low": "#161b2a",
+            "surface-bright": "#343948",
+            "on-tertiary-container": "#c20018",
+            "secondary": "#ffffff",
+            "secondary-fixed": "#c3f400",
+            "on-tertiary-fixed-variant": "#930010",
+            "on-secondary-fixed-variant": "#3c4d00",
+            "on-error": "#690005",
+            "on-primary-container": "#006a71",
+            "on-error-container": "#ffdad6",
+            "on-primary-fixed": "#002022",
+            "surface-container-high": "#252a39",
+            "on-surface-variant": "#b9cacb",
+            "on-primary-fixed-variant": "#004f54",
+            "secondary-fixed-dim": "#abd600",
+            "on-secondary-fixed": "#161e00",
+            "tertiary": "#fff5f4",
+            "on-tertiary": "#680008",
+            "on-secondary": "#283500",
+            "on-primary": "#00363a",
+            "tertiary-fixed": "#ffdad6",
+            "inverse-surface": "#dee2f6",
+            "primary": "#e1fdff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "container-max": "1440px",
+            "margin-desktop": "40px",
+            "gutter": "24px",
+            "unit": "4px",
+            "margin-mobile": "16px"
+          },
+          "fontFamily": {
+            "headline-md": ["Sora"],
+            "display-lg": ["Sora"],
+            "body-lg": ["Hanken Grotesk"],
+            "data-mono": ["JetBrains Mono"],
+            "headline-lg": ["Sora"],
+            "body-md": ["Hanken Grotesk"],
+            "label-caps": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #05070a;
+      color: #dee2f6;
+      overflow-x: hidden;
+    }
+    .glass-panel {
+      background: rgba(14, 19, 33, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .neon-border {
+      box-shadow: 0 0 15px rgba(0, 219, 231, 0.1);
+    }
+    .status-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glow-hover:hover {
+      box-shadow: inset 0 0 10px rgba(0, 219, 231, 0.15);
+      border-color: rgba(0, 219, 231, 0.4);
+    }
+    .ledger-row {
+      transition: all 0.2s linear;
+    }
+    .ledger-row:hover {
+      background: rgba(225, 253, 255, 0.03);
+      transform: translateX(4px);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar (Fixed) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,219,231,0.1)]">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-surface-tint tracking-tighter">NEON_LEDGER</h1>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Analysis</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Wallets</a>
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1 transition-colors duration-200" href="#">Transactions</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center px-4 py-1 rounded-full bg-surface-container-high border border-white/5">
+<span class="text-secondary-fixed font-label-caps text-label-caps">System Status: Synced</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a high-tech user avatar in a sleek, dark cyberpunk environment. The person is wearing minimalist, luminescent eyewear that reflects complex data patterns. The lighting is dominated by deep blues and vibrant neon cyan accents, creating a high-contrast, avant-garde aesthetic consistent with a premium financial command center user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5gcoqZTTzoiS1VFZJjwO7oEzysoQROjWNnW0V8K-kkiXZShGtfONH3utVuDz6iRYbNJTfyTM6VMgWhBSt7sCZSCGt1QhkmABnQFPYS11Z1E4zY3QJeD3EuuryyJyWYwczYszURJhom9wnh8l7CKG3ifVr8806EjnLoM-oObH6_MGDnVVZ-CnOUbTv_5Xzb028g-vJha1G6Hp0t5f7yn4Fw1mMU8MaCifCPROEY9H7uqExm5RTOQxCEA"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container/60 backdrop-blur-2xl border-r border-white/10 shadow-2xl py-6 flex flex-col z-40 hidden md:flex">
+<div class="px-6 mb-10 mt-16">
+<div class="flex items-center gap-3 mb-1">
+<span class="font-headline-md text-headline-md text-primary-fixed">Command Center</span>
+</div>
+<p class="text-on-surface-variant text-label-caps font-label-caps">Elite Tier Access</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">Wallets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary-fixed shadow-[inset_0_0_10px_rgba(0,219,231,0.2)] border-r-2 border-primary-fixed" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-caps text-label-caps">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+<div class="px-6 py-4">
+<button class="w-full py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps rounded flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">upgrade</span>
+        Upgrade Node
+      </button>
+</div>
+<div class="mt-auto px-4 border-t border-white/5 pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-outline hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-outline hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 pt-24 pb-16 px-margin-mobile md:px-margin-desktop min-h-screen">
+<!-- Header Controls -->
+<div class="max-w-container-max mx-auto mb-gutter">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary-fixed mb-2">Transaction Ledger</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Real-time financial stream and encrypted movement log.</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-6 py-2 border border-primary/30 text-primary-fixed font-label-caps text-label-caps hover:bg-primary/5 transition-all glow-hover flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+            Export CSV
+          </button>
+<button class="px-6 py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps hover:brightness-110 transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            Quick Add
+          </button>
+</div>
+</div>
+</div>
+<!-- Filters & Search Bento -->
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-4 gap- gutter mb-gutter">
+<div class="md:col-span-3 glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 items-center">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-b border-outline-variant focus:border-primary-fixed-dim focus:ring-0 text-on-surface pl-10 py-2 font-data-mono text-data-mono" placeholder="Search by merchant, ID, or category..." type="text"/>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<select class="bg-surface-container-low border-none text-on-surface font-label-caps text-label-caps rounded py-2 px-4 focus:ring-1 focus:ring-primary">
+<option>All Types</option>
+<option>Expense</option>
+<option>Income</option>
+<option>Transfer</option>
+</select>
+<select class="bg-surface-container-low border-none text-on-surface font-label-caps text-label-caps rounded py-2 px-4 focus:ring-1 focus:ring-primary">
+<option>Past 30 Days</option>
+<option>This Quarter</option>
+<option>FY 2024</option>
+</select>
+</div>
+</div>
+<div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+<div>
+<p class="text-label-caps font-label-caps text-outline mb-1">Total Volume</p>
+<p class="font-data-mono text-headline-md text-primary-fixed">$142,839.22</p>
+</div>
+<span class="material-symbols-outlined text-secondary-fixed text-headline-lg">monitoring</span>
+</div>
+</div>
+<!-- The Ledger Table -->
+<div class="max-w-container-max mx-auto glass-panel rounded-xl overflow-hidden border border-white/5 neon-border">
+<div class="overflow-x-auto scrollbar-hide">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/50 border-b border-white/10">
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline">Status</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline">Timestamp</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline">Category</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline">Entity / Reference</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline text-right">Amount (USD)</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-outline text-right">Balance</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="ledger-row group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(195,244,0,0.6)]"></div>
+<span class="text-secondary-fixed">CONFIRMED</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">2024.05.12 14:44:02</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">home</span>
+<span>Housing</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-on-surface">Modernist Loft Prime / Rent</span>
+<p class="text-[10px] text-outline mt-1 opacity-50">TXID: 0x82...F92A</p>
+</td>
+<td class="py-4 px-6 text-right text-error">-2,274.00</td>
+<td class="py-4 px-6 text-right text-on-surface">17,726.00</td>
+</tr>
+<!-- Row 2 -->
+<tr class="ledger-row group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(195,244,0,0.6)]"></div>
+<span class="text-secondary-fixed">CONFIRMED</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">2024.05.12 11:30:15</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">restaurant</span>
+<span>Food & Dining</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-on-surface">Neon Bistro #04</span>
+<p class="text-[10px] text-outline mt-1 opacity-50">TXID: 0x41...D21C</p>
+</td>
+<td class="py-4 px-6 text-right text-error">-42.50</td>
+<td class="py-4 px-6 text-right text-on-surface">20,000.00</td>
+</tr>
+<!-- Row 3 -->
+<tr class="ledger-row group bg-primary-fixed/5">
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="status-dot bg-primary-fixed shadow-[0_0_8px_rgba(116,245,255,0.6)]"></div>
+<span class="text-primary-fixed">INCOMING</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">2024.05.10 09:00:00</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">payments</span>
+<span>Revenue</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-on-surface font-bold text-primary-fixed">Cyber_Corp / Monthly Payout</span>
+<p class="text-[10px] text-outline mt-1 opacity-50">TXID: 0x99...E002</p>
+</td>
+<td class="py-4 px-6 text-right text-secondary-fixed font-bold">+40,000.00</td>
+<td class="py-4 px-6 text-right text-on-surface">20,042.50</td>
+</tr>
+<!-- Row 4 -->
+<tr class="ledger-row group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(195,244,0,0.6)]"></div>
+<span class="text-secondary-fixed">CONFIRMED</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">2024.05.08 22:12:44</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">electric_bolt</span>
+<span>Utilities</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-on-surface">Grid Nexus / Energy</span>
+<p class="text-[10px] text-outline mt-1 opacity-50">TXID: 0x12...B331</p>
+</td>
+<td class="py-4 px-6 text-right text-error">-155.00</td>
+<td class="py-4 px-6 text-right text-on-surface">-19,957.50</td>
+</tr>
+<!-- Row 5 -->
+<tr class="ledger-row group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(195,244,0,0.6)]"></div>
+<span class="text-secondary-fixed">CONFIRMED</span>
+</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">2024.05.07 15:20:10</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[20px]">commute</span>
+<span>Transport</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="text-on-surface">HyperLoop / Pass</span>
+<p class="text-[10px] text-outline mt-1 opacity-50">TXID: 0x77...A111</p>
+</td>
+<td class="py-4 px-6 text-right text-error">-85.00</td>
+<td class="py-4 px-6 text-right text-on-surface">-19,802.50</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination -->
+<div class="px-6 py-4 flex justify-between items-center bg-surface-container-highest/20 border-t border-white/10">
+<span class="text-label-caps font-label-caps text-outline">Displaying entries 1 - 25 of 1,204</span>
+<div class="flex gap-2">
+<button class="p-2 glass-panel rounded hover:text-primary transition-colors disabled:opacity-30">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="px-3 py-1 glass-panel rounded text-primary-fixed border-primary/50">1</button>
+<button class="px-3 py-1 glass-panel rounded hover:border-primary/30">2</button>
+<button class="px-3 py-1 glass-panel rounded hover:border-primary/30">3</button>
+<button class="p-2 glass-panel rounded hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full flex justify-between items-center px-margin-desktop py-2 z-40 bg-surface-dim/90 backdrop-blur-md border-t border-white/5">
+<div class="flex items-center gap-6">
+<span class="font-label-caps text-label-caps text-secondary-fixed">NEON_LEDGER v2.4.1</span>
+<div class="flex gap-4">
+<span class="font-data-mono text-data-mono text-outline hover:text-primary-fixed-dim cursor-default">API Status: Optimal</span>
+<span class="font-data-mono text-data-mono text-outline hover:text-primary-fixed-dim cursor-default">Security Protocol: Active</span>
+<span class="font-data-mono text-data-mono text-outline hover:text-primary-fixed-dim cursor-default">Uptime: 99.9%</span>
+</div>
+</div>
+<span class="font-data-mono text-data-mono text-outline">© 2024 NEON_LEDGER</span>
+</footer>
+<!-- Micro-Interactions Script -->
+<script>
+    // Add subtle hover effects and reactive UI states
+    document.querySelectorAll('.ledger-row').forEach(row => {
+      row.addEventListener('mouseenter', () => {
+        // Log hover intent for analytics simulation
+      });
+    });
+
+    // Handle Search Bar Focus
+    const searchInput = document.querySelector('input[type="text"]');
+    searchInput.addEventListener('focus', () => {
+      searchInput.parentElement.classList.add('neon-glow');
+    });
+    searchInput.addEventListener('blur', () => {
+      searchInput.parentElement.classList.remove('neon-glow');
+    });
+  </script>
+</body></html>

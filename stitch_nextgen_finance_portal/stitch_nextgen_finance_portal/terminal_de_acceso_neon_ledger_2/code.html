@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEON_LEDGER | Secure Access</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500&family=JetBrains+Mono:wght@500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Sora:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "inverse-primary": "#00696f",
+                  "on-secondary-container": "#556d00",
+                  "primary-fixed": "#74f5ff",
+                  "surface-variant": "#303444",
+                  "surface-container-lowest": "#090e1c",
+                  "primary-fixed-dim": "#00dbe7",
+                  "error": "#ffb4ab",
+                  "surface-dim": "#0e1321",
+                  "surface-tint": "#00dbe7",
+                  "primary-container": "#00f2ff",
+                  "on-background": "#dee2f6",
+                  "on-surface": "#dee2f6",
+                  "surface": "#0e1321",
+                  "outline-variant": "#3a494b",
+                  "inverse-on-surface": "#2b303f",
+                  "surface-container": "#1a1f2e",
+                  "secondary-container": "#c3f400",
+                  "surface-container-highest": "#303444",
+                  "on-tertiary-fixed": "#410003",
+                  "tertiary-fixed-dim": "#ffb3ac",
+                  "error-container": "#93000a",
+                  "tertiary-container": "#ffd0cb",
+                  "background": "#0e1321",
+                  "outline": "#849495",
+                  "surface-container-low": "#161b2a",
+                  "surface-bright": "#343948",
+                  "on-tertiary-container": "#c20018",
+                  "secondary": "#ffffff",
+                  "secondary-fixed": "#c3f400",
+                  "on-tertiary-fixed-variant": "#930010",
+                  "on-secondary-fixed-variant": "#3c4d00",
+                  "on-error": "#690005",
+                  "on-primary-container": "#006a71",
+                  "on-error-container": "#ffdad6",
+                  "on-primary-fixed": "#002022",
+                  "surface-container-high": "#252a39",
+                  "on-surface-variant": "#b9cacb",
+                  "on-primary-fixed-variant": "#004f54",
+                  "secondary-fixed-dim": "#abd600",
+                  "on-secondary-fixed": "#161e00",
+                  "tertiary": "#fff5f4",
+                  "on-tertiary": "#680008",
+                  "on-secondary": "#283500",
+                  "on-primary": "#00363a",
+                  "tertiary-fixed": "#ffdad6",
+                  "inverse-surface": "#dee2f6",
+                  "primary": "#e1fdff"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.125rem",
+                  "lg": "0.25rem",
+                  "xl": "0.5rem",
+                  "full": "0.75rem"
+          },
+          "spacing": {
+                  "container-max": "1440px",
+                  "margin-desktop": "40px",
+                  "gutter": "24px",
+                  "unit": "4px",
+                  "margin-mobile": "16px"
+          },
+          "fontFamily": {
+                  "headline-md": ["Sora"],
+                  "display-lg": ["Sora"],
+                  "body-lg": ["Hanken Grotesk"],
+                  "data-mono": ["JetBrains Mono"],
+                  "headline-lg": ["Sora"],
+                  "body-md": ["Hanken Grotesk"],
+                  "label-caps": ["JetBrains Mono"]
+          },
+          "fontSize": {
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #05070a;
+      overflow: hidden;
+    }
+
+    .glass-panel {
+      background: rgba(14, 19, 33, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(0, 219, 231, 0.3);
+    }
+
+    .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00dbe7, transparent);
+      top: 0;
+      animation: scan 3s linear infinite;
+      z-index: 10;
+    }
+
+    @keyframes scan {
+      0% { top: 0%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .pulse-cyan {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.02); }
+    }
+
+    .data-grid-bg {
+      background-image: 
+        linear-gradient(rgba(0, 219, 231, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 219, 231, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .matrix-fade {
+      mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+    }
+  </style>
+</head>
+<body class="antialiased text-on-surface">
+<!-- Background Layer -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute inset-0 data-grid-bg matrix-fade"></div>
+<!-- Moving light element simulated with JS/CSS -->
+<div class="absolute w-[800px] h-[800px] bg-primary-fixed-dim/5 rounded-full blur-[120px] transition-all duration-700" id="ambient-glow"></div>
+</div>
+<!-- Foreground Content -->
+<main class="relative z-10 flex items-center justify-center min-h-screen px-margin-mobile md:px-margin-desktop">
+<!-- Login Card Cluster -->
+<div class="w-full max-w-md">
+<!-- Logo & Header -->
+<div class="mb-12 text-center">
+<h1 class="font-headline-lg text-headline-lg font-bold text-surface-tint tracking-tighter mb-2">NEON_LEDGER</h1>
+<p class="font-label-caps text-label-caps text-primary-fixed tracking-widest uppercase">Institutional Grade Finance</p>
+</div>
+<!-- Main Interaction Card -->
+<div class="glass-panel rounded-xl p-8 relative overflow-hidden group">
+<!-- Status Indicator -->
+<div class="absolute top-4 right-4 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary-fixed-dim shadow-[0_0_8px_#00dbe7]"></div>
+<span class="font-label-caps text-[10px] text-outline uppercase">Node Secure</span>
+</div>
+<form class="space-y-6" id="login-form">
+<!-- Identity Input -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-outline block ml-1">Terminal ID</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary-fixed-dim transition-colors">fingerprint</span>
+<input class="w-full bg-surface-container/40 border border-white/10 rounded-lg py-3 pl-12 pr-4 font-data-mono text-data-mono text-primary-fixed placeholder:text-outline/40 focus:ring-2 focus:ring-primary-fixed-dim/20 focus:border-primary-fixed-dim outline-none transition-all" placeholder="USER_X_771" type="text"/>
+</div>
+</div>
+<!-- Biometric Zone -->
+<div class="space-y-4 pt-4">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-outline">Biometric Verification</span>
+<span class="font-data-mono text-[10px] text-primary-fixed-dim">Awaiting Auth...</span>
+</div>
+<div class="relative group cursor-pointer aspect-video bg-surface-container-highest/20 border border-dashed border-white/10 rounded-lg flex flex-col items-center justify-center gap-3 transition-all hover:bg-primary-fixed-dim/5 hover:border-primary-fixed-dim/50 overflow-hidden" id="biometric-trigger">
+<div class="scan-line hidden group-hover:block"></div>
+<div class="relative">
+<span class="material-symbols-outlined text-5xl text-outline group-hover:text-primary-fixed-dim transition-all duration-500 scale-110" style="font-variation-settings: 'FILL' 0;">face</span>
+<div class="absolute inset-0 bg-primary-fixed-dim/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<p class="font-label-caps text-label-caps text-outline group-hover:text-on-surface transition-colors">Position Face or Touch Sensor</p>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 bg-primary-fixed-dim hover:bg-primary-container text-on-primary-fixed font-label-caps text-label-caps font-bold rounded-lg transition-all duration-300 transform active:scale-[0.98] shadow-lg hover:shadow-primary-fixed-dim/20 group relative overflow-hidden" onclick="simulateAccess()" type="button">
+<span class="relative z-10 flex items-center justify-center gap-2">
+              ESTABLISH UPLINK
+              <span class="material-symbols-outlined text-sm">bolt</span>
+</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+</button>
+</form>
+<!-- Access Granted Overlay (Hidden initially) -->
+<div class="absolute inset-0 bg-surface-container-lowest flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-700 z-50" id="access-overlay">
+<div class="relative mb-6">
+<span class="material-symbols-outlined text-7xl text-primary-fixed-dim pulse-cyan">verified_user</span>
+<div class="absolute inset-0 bg-primary-fixed-dim blur-2xl opacity-30"></div>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary-fixed mb-2">ACCESS GRANTED</h2>
+<p class="font-data-mono text-data-mono text-outline uppercase tracking-widest">Decrypting Personal Ledger...</p>
+<div class="mt-8 w-48 h-1 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed-dim w-0 transition-all duration-[2000ms] ease-out" id="loading-bar"></div>
+</div>
+</div>
+</div>
+<!-- Quick Footer Actions -->
+<div class="mt-6 flex justify-between items-center px-2">
+<a class="font-label-caps text-label-caps text-outline hover:text-primary-fixed-dim transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-base">emergency_home</span>
+          Recover Node
+        </a>
+<a class="font-label-caps text-label-caps text-outline hover:text-primary-fixed-dim transition-colors flex items-center gap-2" href="#">
+          New Entity
+          <span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+</div>
+</main>
+<!-- Ambient Light Script -->
+<script>
+    const glow = document.getElementById('ambient-glow');
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX - 400;
+      const y = e.clientY - 400;
+      glow.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    function simulateAccess() {
+      const overlay = document.getElementById('access-overlay');
+      const loader = document.getElementById('loading-bar');
+      
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100');
+      
+      setTimeout(() => {
+        loader.style.width = '100%';
+      }, 100);
+
+      // In a real app, this would redirect
+      setTimeout(() => {
+        overlay.innerHTML = `
+          <div class="text-center">
+            <span class="material-symbols-outlined text-5xl text-primary-fixed-dim mb-4">settings_input_component</span>
+            <p class="font-data-mono text-primary-fixed">SYNCHRONIZING WITH BLOCKCHAIN...</p>
+          </div>
+        `;
+      }, 2500);
+    }
+  </script>
+<!-- Navigation Suppression Logic: This is a task-focused login screen, so we suppress global shells -->
+<!-- Note: Footer included from shared components for copyright integrity only if required, but here we prioritize focus. -->
+<footer class="fixed bottom-0 w-full flex justify-between items-center px-margin-desktop py-4 z-40 bg-transparent border-t border-white/5 opacity-50">
+<div class="font-data-mono text-[10px] text-outline uppercase tracking-widest">
+      © 2024 NEON_LEDGER v2.4.1 // CORE_MODULE_LOCKED
+    </div>
+<div class="flex gap-6">
+<span class="font-data-mono text-[10px] text-primary-fixed-dim">SECURITY PROTOCOL: ACTIVE</span>
+<span class="font-data-mono text-[10px] text-outline">UPTIME: 99.9%</span>
+</div>
+</footer>
+</body></html>

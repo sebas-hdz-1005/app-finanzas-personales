@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// Reglas de seguridad de Cloud Firestore para NEON_LEDGER.
+// Principio: cada usuario autenticado sólo puede leer/escribir SUS propios datos.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    // El documento pertenece al usuario (lectura/borrado).
+    function ownsResource() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+    // El documento entrante pertenece al usuario (creación/edición).
+    function ownsIncoming() {
+      return isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+    function isPositiveAmount() {
+      return request.resource.data.amount is number && request.resource.data.amount >= 0;
+    }
+
+    // ── Perfil de usuario: el doc id es el uid ───────────────
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.userId == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if false; // el perfil no se borra desde el cliente
+    }
+
+    // ── Cuentas ──────────────────────────────────────────────
+    match /accounts/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming();
+    }
+
+    // ── Categorías ───────────────────────────────────────────
+    match /categories/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming();
+    }
+
+    // ── Transacciones ────────────────────────────────────────
+    match /transactions/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming()
+        && request.resource.data.type in ['income', 'expense']
+        && isPositiveAmount();
+    }
+
+    // ── Presupuestos ─────────────────────────────────────────
+    match /budgets/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming();
+    }
+
+    // ── Metas de ahorro ──────────────────────────────────────
+    match /savingGoals/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming();
+    }
+
+    // Todo lo demás queda denegado por defecto.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
