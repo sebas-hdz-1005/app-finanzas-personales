@@ -11,7 +11,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install --with-deps chromium"
+    "test:e2e:install": "playwright install --with-deps chromium",
+    "firebase:login": "npx -y firebase-tools login",
+    "firebase:rules": "npx -y firebase-tools deploy --only firestore:rules,firestore:indexes"
   },
   "dependencies": {
     "firebase": "^10.12.5",
