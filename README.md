@@ -179,14 +179,20 @@ firestore.rules · firestore.indexes.json · firebase.json
 - [Guía de despliegue](./docs/GUIA_DESPLIEGUE.md)
 - [Estado de implementación](./docs/ESTADO_IMPLEMENTACION.md)
 
-## 🗒️ Nota sobre Git
+## 🗒️ Repositorio
 
-El directorio del proyecto está anidado en un repositorio git que abarca todo el
-home del usuario. Para publicar, se recomienda inicializar un repo dedicado:
+Código publicado en: **https://github.com/sebas-hdz-1005/app-finanzas-personales** (rama `main`).
+
+Este proyecto vive en su propio repositorio git dedicado (independiente de cualquier repo
+padre del sistema). El `.gitignore` excluye `node_modules`, `.next` y `.env.local`, y el
+`.gitattributes` normaliza los finales de línea a LF para builds en Linux/Vercel.
+
+Clonado desde cero:
 
 ```bash
-cd app_finanzas
-git init && git add . && git commit -m "NEON_LEDGER: MVP inicial"
+git clone https://github.com/sebas-hdz-1005/app-finanzas-personales.git
+cd app-finanzas-personales
+npm install
+cp .env.example .env.local   # modo demo por defecto
+npm run dev
 ```
-
-(El `.gitignore` ya excluye `node_modules`, `.next` y `.env.local`.)
