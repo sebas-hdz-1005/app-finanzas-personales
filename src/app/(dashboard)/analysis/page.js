@@ -171,7 +171,7 @@ export default function AnalysisPage() {
                   <p className="font-label-caps text-[10px] text-outline uppercase">{t('analysis.recommendationEngine')}</p>
                 </div>
               </div>
-              <div className="p-4 bg-white/5 border border-white/5 rounded-lg flex-1">
+              <div className="p-4 bg-black/5 border border-black/5 rounded-lg flex-1">
                 <p className="font-label-caps text-label-caps text-primary-fixed mb-2 uppercase">
                   {t('analysis.optimizationProtocol')}
                 </p>
@@ -186,7 +186,7 @@ export default function AnalysisPage() {
               <h4 className="font-headline-md text-headline-md text-on-surface mb-6">{t('analysis.categoryEntropy')}</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {distribution.slice(0, 4).map((c) => (
-                  <div key={c.categoryId} className="p-4 bg-white/5 border border-white/5 rounded-lg">
+                  <div key={c.categoryId} className="p-4 bg-black/5 border border-black/5 rounded-lg">
                     <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center mb-3">
                       <Icon name={c.icon} className="text-on-surface-variant text-[20px]" />
                     </div>

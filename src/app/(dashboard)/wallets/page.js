@@ -166,7 +166,7 @@ export default function WalletsPage() {
                 <p className="font-label-caps text-label-caps text-outline uppercase mb-4">
                   {typeLabel(acc.type)} · {acc.currency}
                 </p>
-                <div className="mt-auto pt-4 border-t border-white/5">
+                <div className="mt-auto pt-4 border-t border-black/5">
                   <p className="text-[10px] font-label-caps text-outline uppercase">{t('wallets.currentBalance')}</p>
                   <MoneyText value={balance} currency={acc.currency} tone="auto" className="text-headline-md" />
                   <p className="text-[11px] text-outline mt-1 font-data-mono">

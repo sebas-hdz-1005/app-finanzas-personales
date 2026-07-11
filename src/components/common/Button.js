@@ -8,9 +8,9 @@ const VARIANTS = {
   // Secundario "ghost": borde cyan con glow en hover.
   ghost:
     'border border-primary/30 text-primary-fixed hover:bg-primary/5 glow-hover',
-  outline: 'border border-white/10 bg-white/5 text-on-surface hover:bg-white/10',
+  outline: 'border border-black/10 bg-black/5 text-on-surface hover:bg-black/10',
   danger: 'border border-error/40 text-error hover:bg-error/10',
-  subtle: 'text-on-surface-variant hover:text-primary-fixed hover:bg-white/5',
+  subtle: 'text-on-surface-variant hover:text-primary-fixed hover:bg-black/5',
 };
 
 const SIZES = {

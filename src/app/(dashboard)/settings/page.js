@@ -159,7 +159,7 @@ export default function SettingsPage() {
             {data.categories.map((cat) => (
               <div
                 key={cat.id}
-                className="flex items-center gap-3 p-3 bg-white/5 border border-white/5 rounded-lg"
+                className="flex items-center gap-3 p-3 bg-black/5 border border-black/5 rounded-lg"
               >
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"

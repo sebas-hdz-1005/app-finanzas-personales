@@ -6,6 +6,7 @@ import { cn } from '@/utils/cn';
 import { Icon } from '@/components/common/Icon';
 import { NAV_ITEMS } from '@/constants/navigation';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { useAuth } from '@/features/auth/AuthContext';
 import { LanguageSwitch } from './LanguageSwitch';
 
 /** Barra de navegación inferior (móvil). */
@@ -16,7 +17,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 w-full z-50 md:hidden bg-surface/90 backdrop-blur-xl border-t border-white/10 flex justify-around items-center h-16"
+      className="fixed bottom-0 left-0 w-full z-50 md:hidden bg-surface/90 backdrop-blur-xl border-t border-black/10 flex justify-around items-center h-16"
       aria-label="Navegación móvil"
     >
       {items.map((item) => {
@@ -31,7 +32,7 @@ export function MobileNav() {
               active ? 'text-primary-fixed' : 'text-outline hover:text-on-surface',
             )}
           >
-            <Icon name={item.icon} className={cn('text-[22px]', active && 'drop-shadow-[0_0_6px_#00dbe7]')} />
+            <Icon name={item.icon} className={cn('text-[22px]', active && 'drop-shadow-[0_0_6px_#7c6cf0]')} />
             <span className="text-[9px] font-label-caps uppercase tracking-wide">{t(`nav.${item.key}`)}</span>
           </Link>
         );
@@ -44,6 +45,8 @@ export function MobileNav() {
 export function MobileDrawer({ open, onClose }) {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { user, profile } = useAuth();
+  const displayName = profile?.name || user?.displayName || t('nav.operator');
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[80] md:hidden">
@@ -53,11 +56,11 @@ export function MobileDrawer({ open, onClose }) {
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="absolute left-0 top-0 h-full w-72 bg-surface-container/95 backdrop-blur-2xl border-r border-white/10 py-6 flex flex-col">
+      <div className="absolute left-0 top-0 h-full w-72 bg-surface-container/95 backdrop-blur-2xl border-r border-black/10 py-6 flex flex-col">
         <div className="px-6 mb-8 flex items-center justify-between">
-          <div>
-            <h2 className="font-headline-md text-headline-md text-primary-fixed">{t('nav.commandCenter')}</h2>
-            <p className="font-label-caps text-label-caps text-outline uppercase">{t('nav.eliteTier')}</p>
+          <div className="min-w-0">
+            <h2 className="font-headline-md text-headline-md text-on-surface truncate">{displayName}</h2>
+            <p className="font-label-caps text-label-caps text-outline uppercase">{t('nav.personalFinance')}</p>
           </div>
           <button type="button" onClick={onClose} aria-label={t('common.close')} className="text-outline">
             <Icon name="close" />
@@ -76,7 +79,7 @@ export function MobileDrawer({ open, onClose }) {
                   'flex items-center gap-4 px-6 py-3 font-label-caps text-label-caps',
                   active
                     ? 'bg-primary/10 text-primary-fixed border-r-2 border-primary-fixed'
-                    : 'text-on-surface-variant hover:bg-white/5',
+                    : 'text-on-surface-variant hover:bg-black/5',
                 )}
               >
                 <Icon name={item.icon} />
@@ -85,7 +88,7 @@ export function MobileDrawer({ open, onClose }) {
             );
           })}
         </nav>
-        <div className="px-6 pt-4 border-t border-white/5">
+        <div className="px-6 pt-4 border-t border-black/5">
           <LanguageSwitch />
         </div>
       </div>

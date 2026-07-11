@@ -4,22 +4,22 @@ import { Icon } from '@/components/common/Icon';
 import { formatCurrency } from '@/utils/format';
 
 const TONES = {
-  error: { accent: 'error', light: 'bg-error shadow-[0_0_8px_#ffb4ab]', value: 'text-error', icon: 'text-error' },
+  error: { accent: 'error', light: 'bg-error shadow-[0_0_8px_#e08a8a]', value: 'text-error', icon: 'text-error' },
   success: {
     accent: 'success',
-    light: 'bg-secondary-fixed-dim shadow-[0_0_8px_#abd600]',
+    light: 'bg-secondary-fixed-dim shadow-[0_0_8px_#2f9e75]',
     value: 'text-secondary-fixed-dim',
     icon: 'text-secondary-fixed-dim',
   },
   income: {
     accent: 'none',
-    light: 'bg-secondary-fixed shadow-[0_0_8px_#c3f400]',
+    light: 'bg-secondary-fixed shadow-[0_0_8px_#38a97e]',
     value: 'text-secondary-fixed',
     icon: 'text-secondary-fixed',
   },
   cyan: {
     accent: 'cyan',
-    light: 'bg-primary-fixed-dim shadow-[0_0_8px_#00dbe7]',
+    light: 'bg-primary-fixed-dim shadow-[0_0_8px_#7c6cf0]',
     value: 'text-primary-fixed',
     icon: 'text-primary-fixed',
   },
@@ -48,7 +48,7 @@ export function StatCard({ label, value, currency, tone = 'cyan', icon, breakdow
         {formatCurrency(value, currency, { compact: Math.abs(value) >= 100000 })}
       </h3>
       {breakdown && (
-        <div className="flex gap-4 border-t border-white/5 pt-4 mt-4">
+        <div className="flex gap-4 border-t border-black/5 pt-4 mt-4">
           {breakdown.map((b) => (
             <div key={b.label} className="flex-1 min-w-0">
               <p className="text-[10px] font-label-caps text-outline uppercase">{b.label}</p>

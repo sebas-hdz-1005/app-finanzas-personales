@@ -6,7 +6,7 @@
  * @param {string} [props.gradientId]
  * @param {string} [props.emptyLabel]
  */
-export function AreaLineChart({ points = [], color = '#00dbe7', gradientId = 'flux', emptyLabel = '—' }) {
+export function AreaLineChart({ points = [], color = '#7c6cf0', gradientId = 'flux', emptyLabel = '—' }) {
   const width = 600;
   const height = 260;
   const padX = 12;

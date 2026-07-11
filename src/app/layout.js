@@ -24,20 +24,20 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: 'NEON_LEDGER | Command Center',
+  title: 'Mis Finanzas',
   description:
-    'Portal de finanzas personales de grado institucional. Gestiona ingresos, gastos, presupuestos y metas.',
+    'Gestiona tus ingresos, gastos, presupuestos y metas de ahorro en un solo lugar.',
 };
 
 export const viewport = {
-  themeColor: '#05070a',
+  themeColor: '#f4f3fb',
   width: 'device-width',
   initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`dark ${sora.variable} ${hanken.variable} ${mono.variable}`}>
+    <html lang="es" className={`${sora.variable} ${hanken.variable} ${mono.variable}`}>
       <head>
         {/* Iconos Material Symbols (fuente de ligaduras, cargada como stylesheet) */}
         <link

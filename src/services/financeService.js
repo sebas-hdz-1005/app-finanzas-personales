@@ -59,7 +59,7 @@ export function computeCategoryDistribution(transactions = [], categories = []) 
       categoryId,
       name: cat?.name || 'Sin categoría',
       icon: cat?.icon || 'more_horiz',
-      color: cat?.color || '#849495',
+      color: cat?.color || '#a8a5bd',
       amount: round2(amount),
       percent: grandTotal > 0 ? round2((amount / grandTotal) * 100) : 0,
     };
@@ -158,7 +158,7 @@ export function computeBudgetDrift(budgets = [], transactions = [], categories =
     return {
       ...budget,
       categoryName: cat?.name || 'Sin categoría',
-      categoryColor: cat?.color || '#849495',
+      categoryColor: cat?.color || '#a8a5bd',
       categoryIcon: cat?.icon || 'more_horiz',
       spent: round2(spent),
       limit: round2(limit),

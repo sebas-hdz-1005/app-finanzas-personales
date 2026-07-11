@@ -59,13 +59,13 @@ export function Modal({ open, onClose, title, children, size = 'md', className }
       <div
         ref={ref}
         className={cn(
-          'glass-panel-solid relative w-full rounded-xl border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto scroll-hide',
+          'glass-panel-solid relative w-full rounded-xl border border-black/10 shadow-2xl max-h-[90vh] overflow-y-auto scroll-hide',
           sizes[size],
           className,
         )}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 sticky top-0 bg-surface-container/95 backdrop-blur-xl z-10">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 sticky top-0 bg-surface-container/95 backdrop-blur-xl z-10">
             <h2 className="font-headline-md text-headline-md text-on-surface">{title}</h2>
             <button
               type="button"

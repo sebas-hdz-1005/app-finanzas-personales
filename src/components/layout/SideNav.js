@@ -6,18 +6,21 @@ import { cn } from '@/utils/cn';
 import { Icon } from '@/components/common/Icon';
 import { NAV_ITEMS } from '@/constants/navigation';
 import { useTranslation } from '@/i18n/LanguageProvider';
+import { useAuth } from '@/features/auth/AuthContext';
 
 /** Barra lateral fija (desktop). Oculta en móvil (se usa MobileNav). */
 export function SideNav() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { user, profile } = useAuth();
+  const displayName = profile?.name || user?.displayName || t('nav.operator');
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container/60 backdrop-blur-2xl border-r border-white/10 shadow-2xl flex flex-col py-6 z-40 pt-24 hidden md:flex">
+    <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container/60 backdrop-blur-2xl border-r border-black/10 shadow-[4px_0_24px_rgba(80,70,160,0.06)] flex flex-col py-6 z-40 pt-24 hidden md:flex">
       <div className="px-6 mb-8">
-        <h2 className="font-headline-md text-headline-md text-primary-fixed">{t('nav.commandCenter')}</h2>
-        <p className="font-label-caps text-label-caps text-on-surface-variant opacity-70 uppercase tracking-widest">
-          {t('nav.eliteTier')}
+        <h2 className="font-headline-md text-headline-md text-on-surface truncate">{displayName}</h2>
+        <p className="font-label-caps text-label-caps text-on-surface-variant opacity-80 uppercase tracking-widest">
+          {t('nav.personalFinance')}
         </p>
       </div>
 
@@ -32,8 +35,8 @@ export function SideNav() {
               className={cn(
                 'flex items-center gap-4 px-6 py-3 transition-all duration-200 font-label-caps text-label-caps',
                 active
-                  ? 'bg-primary/10 text-primary-fixed shadow-[inset_0_0_10px_rgba(0,219,231,0.2)] border-r-2 border-primary-fixed'
-                  : 'text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:translate-x-1',
+                  ? 'bg-primary/10 text-primary-fixed shadow-[inset_0_0_10px_rgba(124,108,240,0.2)] border-r-2 border-primary-fixed'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-black/5 hover:translate-x-1',
               )}
             >
               <Icon name={item.icon} />
@@ -44,13 +47,7 @@ export function SideNav() {
       </nav>
 
       <div className="px-6 mt-auto">
-        <Link
-          href="/goals"
-          className="block text-center w-full py-4 border border-primary-fixed text-primary-fixed font-label-caps text-label-caps hover:bg-primary/10 transition-colors mb-8 shadow-[0_0_15px_rgba(0,219,231,0.2)] rounded-lg"
-        >
-          {t('nav.upgradeNode')}
-        </Link>
-        <div className="flex flex-col gap-4 border-t border-white/5 pt-6">
+        <div className="flex flex-col gap-4 border-t border-black/5 pt-6">
           <Link
             href="/profile"
             className="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps"

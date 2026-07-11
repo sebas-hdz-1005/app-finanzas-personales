@@ -30,7 +30,7 @@ export const categorySchema = z.object({
   color: z
     .string()
     .regex(/^#([0-9a-fA-F]{6})$/, 'Color inválido')
-    .default('#849495'),
+    .default('#a8a5bd'),
 });
 
 export const budgetSchema = z.object({

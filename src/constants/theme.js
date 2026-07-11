@@ -3,27 +3,27 @@
  * para usarlos en gráficos SVG y lógica (no sólo en clases Tailwind).
  */
 export const COLORS = {
-  primaryFixedDim: '#00dbe7', // cyan neón
-  primaryFixed: '#74f5ff',
-  secondaryFixed: '#c3f400', // lime — crecimiento/positivo
-  secondaryFixedDim: '#abd600',
-  error: '#ffb4ab', // rojo — deuda/negativo
-  outline: '#849495',
-  onSurface: '#dee2f6',
-  surface: '#0e1321',
-  surfaceContainer: '#1a1f2e',
+  primaryFixedDim: '#7c6cf0', // lavanda (acento principal)
+  primaryFixed: '#9b8cf5',
+  secondaryFixed: '#38a97e', // menta — crecimiento/positivo
+  secondaryFixedDim: '#2f9e75',
+  error: '#d76a6a', // rosa — deuda/negativo
+  outline: '#a8a5bd',
+  onSurface: '#2c2a3d',
+  surface: '#ffffff',
+  surfaceContainer: '#efedf9',
 };
 
 /** Paleta cíclica para categorías/segmentos de gráficos. */
 export const CHART_PALETTE = [
-  '#00dbe7', // cyan
-  '#c3f400', // lime
-  '#ffb4ab', // red
-  '#74f5ff', // light cyan
-  '#abd600', // lime dim
-  '#849495', // outline/gris
-  '#ffb3ac', // tertiary
-  '#00f2ff', // primary container
+  '#7c6cf0', // cyan
+  '#38a97e', // lime
+  '#e08a8a', // red
+  '#9b8cf5', // light cyan
+  '#2f9e75', // lime dim
+  '#a8a5bd', // outline/gris
+  '#f0a878', // tertiary
+  '#6d5ce0', // primary container
 ];
 
 /**

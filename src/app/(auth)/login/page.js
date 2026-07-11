@@ -48,7 +48,7 @@ export default function LoginPage() {
       <div className="glass-panel rounded-xl p-8 relative overflow-hidden">
         <div className="scan-line" />
         <div className="absolute top-4 right-4 flex items-center gap-2">
-          <span className="status-dot bg-primary-fixed-dim shadow-[0_0_8px_#00dbe7]" />
+          <span className="status-dot bg-primary-fixed-dim shadow-[0_0_8px_#7c6cf0]" />
           <span className="font-label-caps text-[10px] text-outline uppercase">{t('auth.nodeSecure')}</span>
         </div>
 

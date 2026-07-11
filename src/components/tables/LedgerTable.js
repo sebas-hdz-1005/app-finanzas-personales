@@ -8,7 +8,7 @@ function StatusCell({ tx, t }) {
   if (tx.type === 'income') {
     return (
       <div className="flex items-center gap-2">
-        <span className="status-dot bg-primary-fixed shadow-[0_0_8px_rgba(116,245,255,0.6)]" />
+        <span className="status-dot bg-primary-fixed shadow-[0_0_8px_rgba(124,108,240,0.6)]" />
         <span className="text-primary-fixed">{t('transactions.statusIncoming')}</span>
       </div>
     );
@@ -16,14 +16,14 @@ function StatusCell({ tx, t }) {
   if (tx.status === 'pending') {
     return (
       <div className="flex items-center gap-2">
-        <span className="status-dot bg-error shadow-[0_0_8px_rgba(255,180,171,0.6)]" />
+        <span className="status-dot bg-error shadow-[0_0_8px_rgba(215,106,106,0.6)]" />
         <span className="text-error">{t('transactions.statusPending')}</span>
       </div>
     );
   }
   return (
     <div className="flex items-center gap-2">
-      <span className="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(195,244,0,0.6)]" />
+      <span className="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(56,169,126,0.6)]" />
       <span className="text-secondary-fixed">{t('transactions.statusConfirmed')}</span>
     </div>
   );
@@ -48,7 +48,7 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
       <div className="hidden md:block overflow-x-auto scroll-hide">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-surface-container-highest/50 border-b border-white/10">
+            <tr className="bg-surface-container-highest/50 border-b border-black/10">
               <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colStatus')}</th>
               <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colTimestamp')}</th>
               <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colCategory')}</th>
@@ -58,7 +58,7 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
               <th className="py-4 px-6 font-label-caps text-label-caps text-outline text-right">{t('transactions.colActions')}</th>
             </tr>
           </thead>
-          <tbody className="font-data-mono text-data-mono divide-y divide-white/5">
+          <tbody className="font-data-mono text-data-mono divide-y divide-black/5">
             {rows.map((tx) => {
               const cat = catOf(tx.categoryId);
               return (
@@ -111,12 +111,12 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
       </div>
 
       {/* Móvil: tarjetas */}
-      <div className="md:hidden divide-y divide-white/5">
+      <div className="md:hidden divide-y divide-black/5">
         {rows.map((tx) => {
           const cat = catOf(tx.categoryId);
           return (
             <div key={tx.id} className="p-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-black/5 flex items-center justify-center shrink-0">
                 <Icon name={cat?.icon || 'more_horiz'} className="text-primary-fixed-dim text-[20px]" />
               </div>
               <div className="min-w-0 flex-1">

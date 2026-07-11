@@ -17,7 +17,7 @@ export function EmptyState({ icon = 'inbox', title, description, action, classNa
         className,
       )}
     >
-      <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-black/5 border border-black/10 flex items-center justify-center">
         <Icon name={icon} className="text-3xl text-outline" />
       </div>
       <h3 className="font-headline-md text-headline-md text-on-surface">{title}</h3>

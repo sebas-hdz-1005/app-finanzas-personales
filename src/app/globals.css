@@ -4,7 +4,7 @@
 
 /* ───────────────────────── Base ───────────────────────── */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -12,57 +12,58 @@ html {
 }
 
 body {
-  background-color: #05070a;
-  color: #dee2f6;
+  background-color: #f4f3fb;
+  color: #2c2a3d;
   overflow-x: hidden;
 }
 
-/* ─────────────────── Componentes del design system ─────────────────── */
+/* ─────────────────── Componentes del sistema visual ─────────────────── */
 @layer components {
   .glass-panel {
-    background: rgba(26, 31, 46, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(20, 18, 45, 0.07);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(80, 70, 160, 0.06);
     position: relative;
   }
 
   .glass-panel-solid {
-    background: rgba(14, 19, 33, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid rgba(20, 18, 45, 0.08);
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 34px rgba(80, 70, 160, 0.14);
   }
 
   .neon-border-cyan {
-    border-color: #00dbe7;
-    box-shadow: 0 0 10px rgba(0, 219, 231, 0.3);
+    border-color: rgba(109, 92, 224, 0.5);
+    box-shadow: 0 2px 16px rgba(109, 92, 224, 0.14);
   }
   .neon-border-error {
-    border-color: #ffb4ab;
-    box-shadow: 0 0 10px rgba(255, 180, 171, 0.3);
+    border-color: rgba(215, 106, 106, 0.5);
+    box-shadow: 0 2px 16px rgba(215, 106, 106, 0.14);
   }
   .neon-border-success {
-    border-color: #c3f400;
-    box-shadow: 0 0 10px rgba(195, 244, 0, 0.3);
+    border-color: rgba(47, 158, 117, 0.5);
+    box-shadow: 0 2px 16px rgba(47, 158, 117, 0.14);
   }
   .neon-glow {
-    box-shadow: 0 0 15px rgba(0, 219, 231, 0.1);
+    box-shadow: 0 4px 22px rgba(80, 70, 160, 0.08);
   }
 
   .status-light {
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 14px;
+    left: 14px;
   }
 
   .status-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
   }
@@ -71,13 +72,13 @@ body {
     transition: all 0.2s linear;
   }
   .ledger-row:hover {
-    background: rgba(225, 253, 255, 0.03);
+    background: rgba(109, 92, 224, 0.05);
     transform: translateX(4px);
   }
 
   .glow-hover:hover {
-    box-shadow: inset 0 0 10px rgba(0, 219, 231, 0.15);
-    border-color: rgba(0, 219, 231, 0.4);
+    box-shadow: inset 0 0 0 1px rgba(109, 92, 224, 0.25);
+    border-color: rgba(109, 92, 224, 0.4);
   }
 }
 
@@ -92,8 +93,8 @@ body {
   }
 
   .data-grid-bg {
-    background-image: linear-gradient(rgba(0, 219, 231, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 219, 231, 0.05) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(109, 92, 224, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(109, 92, 224, 0.07) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
@@ -128,7 +129,7 @@ body {
   position: absolute;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #00dbe7, transparent);
+  background: linear-gradient(90deg, transparent, #7c6cf0, transparent);
   top: 0;
   animation: scan 3s linear infinite;
   z-index: 10;
@@ -140,8 +141,8 @@ body {
   100% { top: 100%; opacity: 0; }
 }
 
-/* Foco accesible visible en toda la app */
+/* Foco accesible visible */
 *:focus-visible {
-  outline: 2px solid #00dbe7;
+  outline: 2px solid #6d5ce0;
   outline-offset: 2px;
 }

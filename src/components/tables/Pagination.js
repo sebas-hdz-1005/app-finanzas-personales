@@ -15,7 +15,7 @@ export function Pagination({ page, totalPages, onChange, totalItems, pageSize })
   const { t } = useTranslation();
   if (totalPages <= 1) {
     return totalItems != null ? (
-      <div className="px-6 py-4 bg-surface-container-highest/20 border-t border-white/10">
+      <div className="px-6 py-4 bg-surface-container-highest/20 border-t border-black/10">
         <span className="text-label-caps font-label-caps text-outline">
           {totalItems} {totalItems === 1 ? t('common.entry') : t('common.entries')}
         </span>
@@ -33,7 +33,7 @@ export function Pagination({ page, totalPages, onChange, totalItems, pageSize })
   const btn = 'px-3 py-1 glass-panel rounded font-data-mono text-data-mono transition-colors';
 
   return (
-    <div className="px-6 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center bg-surface-container-highest/20 border-t border-white/10">
+    <div className="px-6 py-4 flex flex-col sm:flex-row gap-3 justify-between items-center bg-surface-container-highest/20 border-t border-black/10">
       <span className="text-label-caps font-label-caps text-outline">
         {t('common.showing', { start, end, total: totalItems })}
       </span>

@@ -13,7 +13,7 @@ export function LanguageSwitch({ className }) {
 
   return (
     <div
-      className={cn('inline-flex rounded-lg border border-white/10 bg-white/5 p-0.5', className)}
+      className={cn('inline-flex rounded-lg border border-black/10 bg-black/5 p-0.5', className)}
       role="group"
       aria-label={t('language.label')}
     >

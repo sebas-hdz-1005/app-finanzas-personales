@@ -80,7 +80,7 @@ export function TransactionForm({
             className={
               values.type === opt.value
                 ? 'py-2.5 rounded-lg font-label-caps text-label-caps border border-primary-fixed text-primary-fixed bg-primary/10'
-                : 'py-2.5 rounded-lg font-label-caps text-label-caps border border-white/10 text-outline hover:bg-white/5'
+                : 'py-2.5 rounded-lg font-label-caps text-label-caps border border-black/10 text-outline hover:bg-black/5'
             }
             aria-pressed={values.type === opt.value}
           >

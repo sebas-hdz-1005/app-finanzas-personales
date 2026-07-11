@@ -1,3 +1,6 @@
+/** Nombre visible de la aplicación (marca). */
+export const APP_NAME = 'Mis Finanzas';
+
 export const ACCOUNT_TYPES = [
   { value: 'checking', label: 'Cuenta corriente' },
   { value: 'savings', label: 'Ahorros' },

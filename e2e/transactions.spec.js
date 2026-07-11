@@ -3,11 +3,11 @@ const { test, expect } = require('@playwright/test');
 async function registerAndLogin(page) {
   const email = `e2e_${Date.now()}_${Math.floor(Math.random() * 1000)}@neonledger.app`;
   await page.goto('/register');
-  await page.getByLabel(/Nombre del operador/i).fill('Tester');
-  await page.getByLabel(/Terminal ID/i).fill(email);
-  await page.getByLabel(/Clave de acceso/i).fill('secret123');
-  await page.getByLabel(/Confirmar clave/i).fill('secret123');
-  await page.getByRole('button', { name: /Crear Entidad/i }).click();
+  await page.getByLabel(/Nombre/i).fill('Tester');
+  await page.getByLabel(/Correo electrónico/i).fill(email);
+  await page.getByLabel(/^Contraseña/).fill('secret123');
+  await page.getByLabel(/Confirmar contraseña/i).fill('secret123');
+  await page.getByRole('button', { name: /Crear cuenta/i }).click();
   await expect(page).toHaveURL(/\/dashboard/);
 }
 

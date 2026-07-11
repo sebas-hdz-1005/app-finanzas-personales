@@ -45,7 +45,7 @@ export function CategoryForm({ initialValues, onSubmit, onCancel, submitting }) 
               'py-2.5 rounded-lg font-label-caps text-label-caps border',
               values.type === opt.value
                 ? 'border-primary-fixed text-primary-fixed bg-primary/10'
-                : 'border-white/10 text-outline hover:bg-white/5',
+                : 'border-black/10 text-outline hover:bg-black/5',
             )}
           >
             {opt.label}
@@ -68,7 +68,7 @@ export function CategoryForm({ initialValues, onSubmit, onCancel, submitting }) 
               aria-pressed={values.icon === ic}
               className={cn(
                 'aspect-square flex items-center justify-center rounded-lg border transition-colors',
-                values.icon === ic ? 'border-primary-fixed bg-primary/10 text-primary-fixed' : 'border-white/10 text-outline hover:bg-white/5',
+                values.icon === ic ? 'border-primary-fixed bg-primary/10 text-primary-fixed' : 'border-black/10 text-outline hover:bg-black/5',
               )}
             >
               <Icon name={ic} className="text-[20px]" />

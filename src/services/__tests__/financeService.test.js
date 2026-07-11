@@ -12,9 +12,9 @@ import {
 } from '@/services/financeService';
 
 const categories = [
-  { id: 'c1', name: 'Hogar', type: 'expense', icon: 'home', color: '#00dbe7' },
-  { id: 'c2', name: 'Comida', type: 'expense', icon: 'restaurant', color: '#c3f400' },
-  { id: 'c3', name: 'Salario', type: 'income', icon: 'payments', color: '#abd600' },
+  { id: 'c1', name: 'Hogar', type: 'expense', icon: 'home', color: '#7c6cf0' },
+  { id: 'c2', name: 'Comida', type: 'expense', icon: 'restaurant', color: '#38a97e' },
+  { id: 'c3', name: 'Salario', type: 'income', icon: 'payments', color: '#2f9e75' },
 ];
 
 const txns = [

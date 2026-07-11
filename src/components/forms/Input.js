@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn';
 import { Icon } from '@/components/common/Icon';
 
 const baseInput =
-  'w-full bg-surface-container/40 border border-white/10 rounded-lg py-3 px-4 font-body-md text-body-md text-on-surface placeholder:text-outline/40 focus:ring-2 focus:ring-primary-fixed-dim/20 focus:border-primary-fixed-dim outline-none transition-all';
+  'w-full bg-surface-container/40 border border-black/10 rounded-lg py-3 px-4 font-body-md text-body-md text-on-surface placeholder:text-outline/40 focus:ring-2 focus:ring-primary-fixed-dim/20 focus:border-primary-fixed-dim outline-none transition-all';
 
 export const Input = forwardRef(function Input(
   { className, icon, error, id, ...rest },

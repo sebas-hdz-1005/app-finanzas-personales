@@ -22,9 +22,10 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { formatCurrency } from '@/utils/format';
 
 export default function DashboardPage() {
-  const { currency } = useAuth();
+  const { currency, profile, user } = useAuth();
   const { t, months } = useTranslation();
   const { data, loading, error, reload } = useFinancialData();
+  const firstName = (profile?.name || user?.displayName || t('nav.operator')).split(' ')[0];
 
   const model = useMemo(() => {
     const totals = computeTotals(data.transactions);
@@ -49,8 +50,10 @@ export default function DashboardPage() {
     <div className="space-y-gutter">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2">
         <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface">{t('dashboard.title')}</h1>
-          <p className="font-label-caps text-label-caps text-outline uppercase tracking-widest">
+          <h1 className="font-headline-lg text-headline-lg text-on-surface">
+            {t('dashboard.greeting', { name: firstName })}
+          </h1>
+          <p className="font-body-md text-body-md text-on-surface-variant">
             {t('dashboard.subtitle')}
           </p>
         </div>
@@ -91,9 +94,9 @@ export default function DashboardPage() {
             <p className="font-body-md text-body-md text-secondary-fixed">
               {t('dashboard.savingsRate', { rate: savingsRate })}
             </p>
-            <div className="w-full bg-white/5 h-1 mt-2 rounded-pill overflow-hidden">
+            <div className="w-full bg-black/5 h-1 mt-2 rounded-pill overflow-hidden">
               <div
-                className="bg-secondary-fixed h-full shadow-[0_0_10px_#c3f400]"
+                className="bg-secondary-fixed h-full shadow-[0_0_10px_#38a97e]"
                 style={{ width: `${Math.max(0, Math.min(100, savingsRate))}%` }}
               />
             </div>
@@ -157,7 +160,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="overflow-x-auto scroll-hide">
                   <table className="w-full text-left">
-                    <thead className="border-b border-white/10">
+                    <thead className="border-b border-black/10">
                       <tr>
                         <th className="py-3 font-label-caps text-label-caps text-outline">{t('dashboard.category')}</th>
                         <th className="py-3 font-label-caps text-label-caps text-outline text-right">%</th>
@@ -165,9 +168,9 @@ export default function DashboardPage() {
                         <th className="py-3 font-label-caps text-label-caps text-outline text-right">{t('dashboard.status')}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5 font-data-mono text-data-mono">
+                    <tbody className="divide-y divide-black/5 font-data-mono text-data-mono">
                       {topCategories.map((c) => (
-                        <tr key={c.categoryId} className="hover:bg-white/5 transition-colors">
+                        <tr key={c.categoryId} className="hover:bg-black/5 transition-colors">
                           <td className="py-4 text-on-surface">
                             <div className="flex items-center gap-3">
                               <Icon name={c.icon} className="text-primary-fixed text-[18px]" />
@@ -195,7 +198,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {flux.map((m) => (
-                    <div key={m.key} className="p-3 bg-white/5 border border-white/5 rounded-lg">
+                    <div key={m.key} className="p-3 bg-black/5 border border-black/5 rounded-lg">
                       <p className="text-[10px] text-outline font-label-caps">{months[m.monthIndex]}</p>
                       <p className={`font-data-mono ${m.expense > 0 ? 'text-error' : 'text-outline'}`}>
                         {formatCurrency(m.expense, currency, { compact: true })}

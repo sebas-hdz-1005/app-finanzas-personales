@@ -4,7 +4,7 @@ const TONES = {
   success: 'bg-secondary-fixed/10 text-secondary-fixed',
   error: 'bg-error/10 text-error',
   cyan: 'bg-primary-fixed/10 text-primary-fixed',
-  neutral: 'bg-white/5 text-outline',
+  neutral: 'bg-black/5 text-outline',
 };
 
 /**

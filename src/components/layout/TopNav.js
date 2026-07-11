@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/utils/cn';
 import { Icon } from '@/components/common/Icon';
 import { TOP_NAV_ITEMS } from '@/constants/navigation';
+import { APP_NAME } from '@/constants';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from '@/i18n/LanguageProvider';
 import { LanguageSwitch } from './LanguageSwitch';
@@ -28,6 +29,7 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
   }, []);
 
   const displayName = profile?.name || user?.displayName || t('nav.operator');
+  const firstName = displayName.split(' ')[0];
   const initial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
@@ -36,7 +38,7 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,219,231,0.1)]">
+    <header className="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-surface/80 backdrop-blur-xl border-b border-black/10 shadow-[0_2px_12px_rgba(80,70,160,0.06)]">
       <div className="flex items-center gap-4 md:gap-gutter">
         <button
           type="button"
@@ -48,9 +50,9 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
         </button>
         <Link
           href="/dashboard"
-          className="font-headline-lg text-headline-lg font-bold text-surface-tint tracking-tighter"
+          className="font-headline-lg text-headline-lg font-bold text-surface-tint tracking-tight"
         >
-          NEON_LEDGER
+          {APP_NAME}
         </Link>
         <nav className="hidden md:flex gap-8 ml-8" aria-label="Navegación">
           {TOP_NAV_ITEMS.map((item) => {
@@ -75,12 +77,9 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
       </div>
 
       <div className="flex items-center gap-4 md:gap-6">
-        <div className="hidden lg:flex flex-col items-end mr-2">
-          <span className="font-label-caps text-label-caps text-secondary-fixed flex items-center gap-1.5">
-            <span className="status-dot bg-secondary-fixed shadow-[0_0_8px_#c3f400]" />
-            System Status: Synced
-          </span>
-        </div>
+        <span className="hidden lg:block font-body-md text-body-md text-on-surface-variant mr-1">
+          {t('nav.greeting', { name: firstName })}
+        </span>
         <button
           type="button"
           onClick={onQuickAdd}
@@ -108,15 +107,15 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
           {menuOpen && (
             <div
               role="menu"
-              className="absolute right-0 mt-2 w-60 glass-panel-solid rounded-lg border border-white/10 shadow-2xl py-2 z-50"
+              className="absolute right-0 mt-2 w-60 glass-panel-solid rounded-lg border border-black/10 shadow-2xl py-2 z-50"
             >
-              <div className="px-4 py-2 border-b border-white/10 mb-1">
+              <div className="px-4 py-2 border-b border-black/10 mb-1">
                 <p className="font-body-md text-on-surface truncate">{displayName}</p>
                 <p className="font-data-mono text-[11px] text-outline truncate">{user?.email}</p>
               </div>
 
               {/* Selector de idioma dentro del menú */}
-              <div className="px-4 py-2 flex items-center justify-between border-b border-white/10 mb-1">
+              <div className="px-4 py-2 flex items-center justify-between border-b border-black/10 mb-1">
                 <span className="font-label-caps text-label-caps text-outline uppercase">
                   {t('language.label')}
                 </span>
@@ -127,7 +126,7 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
                 href="/profile"
                 role="menuitem"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-white/5 hover:text-primary-fixed font-label-caps text-label-caps"
+                className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-black/5 hover:text-primary-fixed font-label-caps text-label-caps"
               >
                 <Icon name="person" className="text-[18px]" /> {t('nav.profile')}
               </Link>
@@ -135,7 +134,7 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
                 href="/settings"
                 role="menuitem"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-white/5 hover:text-primary-fixed font-label-caps text-label-caps"
+                className="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-black/5 hover:text-primary-fixed font-label-caps text-label-caps"
               >
                 <Icon name="settings" className="text-[18px]" /> {t('nav.settings')}
               </Link>
