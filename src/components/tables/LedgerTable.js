@@ -19,7 +19,7 @@ function statusMeta(tx, t) {
  * horizontal (el saldo corriente sólo se muestra en pantallas muy anchas).
  * Responsive: tabla en escritorio (lg+), tarjetas en móvil/tablet.
  */
-export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
+export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete, currency }) {
   const { t } = useTranslation();
   const catOf = (id) => categoriesById?.get(id);
 
@@ -64,10 +64,10 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
                     <span className="text-on-surface block truncate">{tx.title}</span>
                   </td>
                   <td className={`py-3 px-4 text-right whitespace-nowrap ${tx.type === 'income' ? 'text-secondary-fixed font-bold' : 'text-error'}`}>
-                    {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount)}
+                    {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount, { currency })}
                   </td>
                   <td className="py-3 px-4 text-right text-on-surface tabular-nums whitespace-nowrap hidden 2xl:table-cell">
-                    {formatAmount(tx.balance, { showSign: false })}
+                    {formatAmount(tx.balance, { showSign: false, currency })}
                   </td>
                   <td className="py-3 px-4 text-right whitespace-nowrap">
                     <button
@@ -115,7 +115,7 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
               </div>
               <div className="text-right shrink-0">
                 <p className={`font-data-mono whitespace-nowrap ${tx.type === 'income' ? 'text-secondary-fixed' : 'text-error'}`}>
-                  {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount)}
+                  {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount, { currency })}
                 </p>
                 <div className="flex gap-3 justify-end mt-1">
                   <button type="button" onClick={() => onEdit?.(tx)} aria-label={t('common.edit')} className="text-outline">

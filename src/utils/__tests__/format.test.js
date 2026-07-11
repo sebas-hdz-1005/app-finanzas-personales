@@ -34,6 +34,18 @@ describe('formatAmount', () => {
   });
 });
 
+describe('monedas sin decimales', () => {
+  it('COP se muestra sin centavos; MXN sí los muestra', () => {
+    expect(formatCurrency(6534000, 'COP')).not.toMatch(/[.,]00\b/);
+    expect(formatCurrency(6534000, 'COP')).toMatch(/6.?534.?000/);
+    expect(formatCurrency(1000, 'MXN')).toMatch(/1,000\.00/);
+  });
+  it('formatAmount respeta la moneda sin decimales', () => {
+    expect(formatAmount(6534000, { currency: 'COP' })).not.toMatch(/\.00/);
+    expect(formatAmount(1000)).toBe('+1,000.00'); // sin moneda → 2 decimales
+  });
+});
+
 describe('formatDate / formatLedgerTimestamp', () => {
   it('formatea una fecha ISO', () => {
     expect(formatDate('2024-05-12')).toMatch(/2024/);

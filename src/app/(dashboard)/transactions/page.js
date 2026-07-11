@@ -234,6 +234,7 @@ export default function TransactionsPage() {
               categoriesById={categoriesById}
               onEdit={openEdit}
               onDelete={setDeleting}
+              currency={currency}
             />
             <Pagination
               page={safePage}

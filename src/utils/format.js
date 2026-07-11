@@ -6,6 +6,20 @@
 
 let currentLocale = 'es-MX';
 
+/**
+ * Monedas que en la práctica no usan decimales (se muestran sin centavos).
+ * Incluye las de cero decimales de ISO 4217 y otras de uso común (COP, ARS…).
+ */
+const NO_DECIMAL_CURRENCIES = new Set([
+  'COP', 'CLP', 'ARS', 'JPY', 'KRW', 'VND', 'PYG', 'ISK', 'HUF', 'CRC',
+  'GNF', 'RWF', 'UGX', 'XAF', 'XOF', 'XPF', 'BIF', 'KMF', 'DJF',
+]);
+
+/** Decimales a mostrar para una moneda (0 para las sin centavos, 2 para el resto). */
+function decimalsFor(currency) {
+  return currency && NO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
+}
+
 /** Ajusta el locale usado por los formateadores (p. ej. 'es-MX' | 'en-US'). */
 export function setFormatLocale(locale) {
   if (locale) currentLocale = locale;
@@ -28,11 +42,12 @@ export function getFormatLocale() {
 export function formatCurrency(value, currency = 'MXN', opts = {}) {
   const { showSign = false, compact = false } = opts;
   const safe = Number.isFinite(value) ? value : 0;
+  const decimals = decimalsFor(currency);
   const formatter = new Intl.NumberFormat(currentLocale, {
     style: 'currency',
     currency,
-    minimumFractionDigits: compact ? 0 : 2,
-    maximumFractionDigits: compact ? 1 : 2,
+    minimumFractionDigits: compact ? 0 : decimals,
+    maximumFractionDigits: compact ? 1 : decimals,
     notation: compact ? 'compact' : 'standard',
   });
   const formatted = formatter.format(Math.abs(safe));
@@ -48,11 +63,12 @@ export function formatCurrency(value, currency = 'MXN', opts = {}) {
  * @returns {string}
  */
 export function formatAmount(value, opts = {}) {
-  const { showSign = true } = opts;
+  const { showSign = true, currency } = opts;
   const safe = Number.isFinite(value) ? value : 0;
+  const decimals = decimalsFor(currency);
   const formatted = new Intl.NumberFormat(currentLocale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   }).format(Math.abs(safe));
   if (safe < 0) return `-${formatted}`;
   if (showSign && safe > 0) return `+${formatted}`;
