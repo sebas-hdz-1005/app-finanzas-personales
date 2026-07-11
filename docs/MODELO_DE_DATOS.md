@@ -110,12 +110,14 @@ users (1) ──< budgets (N) >── (1) categories
 users (1) ──< savingGoals (N)
 ```
 
-## Índices (Firestore) — ver `firestore.indexes.json`
+## Índices (Firestore)
 
-- `transactions`: (`userId` ASC, `transactionDate` DESC) — listados y paginación.
-- `transactions`: (`userId` ASC, `type` ASC, `transactionDate` DESC) — filtros por tipo.
-- `budgets`: (`userId` ASC, `categoryId` ASC).
-- `savingGoals`: (`userId` ASC, `status` ASC).
+El adaptador Firebase consulta **sólo** por `where('userId','==',uid)` (índice de campo
+único, automático) y **ordena/filtra en memoria** (ver `filterService` y el `sort` del
+repositorio). Por eso **no se requieren índices compuestos** y `firestore.indexes.json`
+va vacío. Es adecuado para el volumen por usuario de una app de finanzas personales; si en
+el futuro se necesitara paginación server-side sobre grandes volúmenes, se añadirían índices
+compuestos (p. ej. `transactions`: `userId` ASC + `transactionDate` DESC).
 
 ## Derivaciones (calculadas por `financeService`, no persistidas salvo caché)
 

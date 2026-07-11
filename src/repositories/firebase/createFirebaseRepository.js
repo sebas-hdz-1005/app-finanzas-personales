@@ -9,7 +9,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy as fbOrderBy,
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebase } from '@/lib/firebase/config';
@@ -35,9 +34,23 @@ export function createFirebaseRepository(collectionName) {
 
   return {
     async list(userId, { orderBy = 'createdAt', direction = 'desc' } = {}) {
-      const q = query(col(), where('userId', '==', userId), fbOrderBy(orderBy, direction));
+      // Se filtra por userId (índice de campo único, automático) y se ORDENA EN
+      // MEMORIA. Así se evita necesitar índices compuestos en Firestore
+      // (equality + orderBy sobre otro campo los exigiría). Adecuado para el
+      // volumen de datos por usuario de una app de finanzas personales.
+      const q = query(col(), where('userId', '==', userId));
       const snap = await getDocs(q);
-      return snap.docs.map(normalize);
+      const records = snap.docs.map(normalize);
+      records.sort((a, b) => {
+        const av = a[orderBy];
+        const bv = b[orderBy];
+        if (av === bv) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        const cmp = av > bv ? 1 : -1;
+        return direction === 'asc' ? cmp : -cmp;
+      });
+      return records;
     },
 
     async get(userId, id) {
