@@ -11,6 +11,7 @@ import { computeTotals, withRunningBalance, computeNetWorth } from '@/services/f
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
+import { Icon } from '@/components/common/Icon';
 import { Input } from '@/components/forms/Input';
 import { Select } from '@/components/forms/Select';
 import { Modal } from '@/components/common/Modal';
@@ -22,7 +23,7 @@ import { LoadingState } from '@/components/common/Spinner';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { useToast } from '@/components/common/Toast';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency, formatMonthYear } from '@/utils/format';
 import { downloadTransactionsCsv } from '@/utils/csv';
 
 const PAGE_SIZE = 8;
@@ -33,21 +34,30 @@ export default function TransactionsPage() {
   const toast = useToast();
   const { data, loading, error, reload } = useFinancialData();
 
-  const [filters, setFilters] = useState({ type: 'all', search: '', preset: '30d', categoryId: 'all' });
+  const [filters, setFilters] = useState({
+    type: 'all',
+    search: '',
+    preset: '30d',
+    categoryId: 'all',
+    customRange: null, // {from, to, label} al llegar con ?from&to
+  });
   const [page, setPage] = useState(1);
 
-  // Filtro inicial desde la URL (?category=ID&type=expense), p. ej. al llegar
-  // desde "Gastos por categoría" del panel.
+  // Filtro inicial desde la URL (?category=ID&type=expense&from=..&to=..),
+  // p. ej. al llegar desde "Gastos por categoría" del panel.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const category = params.get('category');
     const type = params.get('type');
-    if (category || type) {
+    const from = params.get('from');
+    const to = params.get('to');
+    if (category || type || (from && to)) {
       setFilters((f) => ({
         ...f,
         categoryId: category || f.categoryId,
         type: type === 'income' || type === 'expense' ? type : f.type,
-        preset: 'all', // mostrar todos los movimientos de esa categoría
+        preset: 'all',
+        customRange: from && to ? { from, to, label: from.slice(0, 7) } : null,
       }));
     }
   }, []);
@@ -62,7 +72,9 @@ export default function TransactionsPage() {
   );
 
   const filtered = useMemo(() => {
-    const range = dateRangeFromPreset(filters.preset);
+    const range = filters.customRange
+      ? { from: filters.customRange.from, to: filters.customRange.to }
+      : dateRangeFromPreset(filters.preset);
     return filterTransactions(
       data.transactions,
       { type: filters.type, search: filters.search, categoryId: filters.categoryId, ...range },
@@ -82,7 +94,8 @@ export default function TransactionsPage() {
   const rowsWithBalance = withRunningBalance(pageRows, netWorth);
 
   const setFilter = (name, value) => {
-    setFilters((f) => ({ ...f, [name]: value }));
+    // Cambiar el preset de fecha desactiva el rango del mes (venido de la URL).
+    setFilters((f) => ({ ...f, [name]: value, ...(name === 'preset' ? { customRange: null } : {}) }));
     setPage(1);
   };
 
@@ -212,6 +225,24 @@ export default function TransactionsPage() {
         </Card>
       </div>
 
+      {/* Chip de mes activo (viene del panel) */}
+      {filters.customRange && (
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-pill bg-primary/10 text-primary-fixed font-label-caps text-label-caps">
+            <Icon name="calendar_month" className="text-[16px]" />
+            {t('period.showing', { month: formatMonthYear(filters.customRange.label) })}
+            <button
+              type="button"
+              onClick={() => setFilter('customRange', null)}
+              aria-label={t('common.clearFilters')}
+              className="hover:text-primary"
+            >
+              <Icon name="close" className="text-[16px]" />
+            </button>
+          </span>
+        </div>
+      )}
+
       {/* Tabla */}
       <Card className="p-0 overflow-hidden neon-glow">
         {loading ? (
@@ -236,7 +267,7 @@ export default function TransactionsPage() {
                 <Button
                   variant="outline"
                   icon="filter_alt_off"
-                  onClick={() => setFilters({ type: 'all', search: '', preset: 'all', categoryId: 'all' })}
+                  onClick={() => setFilters({ type: 'all', search: '', preset: 'all', categoryId: 'all', customRange: null })}
                 >
                   {t('common.clearFilters')}
                 </Button>

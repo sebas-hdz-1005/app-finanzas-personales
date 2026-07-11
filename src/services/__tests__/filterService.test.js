@@ -1,4 +1,4 @@
-import { filterTransactions, dateRangeFromPreset } from '@/services/filterService';
+import { filterTransactions, dateRangeFromPreset, monthRange } from '@/services/filterService';
 
 const categoriesById = new Map([
   ['c1', { id: 'c1', name: 'Hogar' }],
@@ -57,5 +57,13 @@ describe('dateRangeFromPreset', () => {
 
   it('all devuelve rango vacío', () => {
     expect(dateRangeFromPreset('all')).toEqual({});
+  });
+});
+
+describe('monthRange', () => {
+  it('devuelve el primer y último día del mes', () => {
+    expect(monthRange('2024-05')).toEqual({ from: '2024-05-01', to: '2024-05-31' });
+    expect(monthRange('2024-02')).toEqual({ from: '2024-02-01', to: '2024-02-29' }); // bisiesto
+    expect(monthRange('2023-02')).toEqual({ from: '2023-02-01', to: '2023-02-28' });
   });
 });

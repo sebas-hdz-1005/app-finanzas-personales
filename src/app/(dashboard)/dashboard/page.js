@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -13,7 +13,9 @@ import {
   computeMonthlyComparison,
   computeDebtsSummary,
 } from '@/services/financeService';
+import { monthRange } from '@/services/filterService';
 import { Card } from '@/components/common/Card';
+import { MonthNavigator } from '@/components/common/MonthNavigator';
 import { StatCard, DataNode } from '@/components/financial/StatCard';
 import { MonthlyComparison } from '@/components/financial/MonthlyComparison';
 import { MoneyText } from '@/components/financial/MoneyText';
@@ -24,7 +26,7 @@ import { Button } from '@/components/common/Button';
 import { LoadingState } from '@/components/common/Spinner';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency, monthKey, formatMonthYear } from '@/utils/format';
 
 export default function DashboardPage() {
   const { currency, profile, user } = useAuth();
@@ -33,17 +35,28 @@ export default function DashboardPage() {
   const { data, loading, error, reload } = useFinancialData();
   const firstName = (profile?.name || user?.displayName || t('nav.operator')).split(' ')[0];
 
+  // Periodo del panel: 'YYYY-MM' (mes) o null (todo el tiempo). Por defecto, mes actual.
+  const [period, setPeriod] = useState(() => monthKey(new Date()));
+
+  // Transacciones del periodo seleccionado (los KPIs y la distribución se acotan a él).
+  const scoped = useMemo(() => {
+    if (!period) return data.transactions;
+    return data.transactions.filter(
+      (tx) => typeof tx.transactionDate === 'string' && tx.transactionDate.slice(0, 7) === period,
+    );
+  }, [data.transactions, period]);
+
   const model = useMemo(() => {
-    const totals = computeTotals(data.transactions);
-    const distribution = computeCategoryDistribution(data.transactions, data.categories);
-    const flux = computeMonthlyFlux(data.transactions, 4);
-    const fixedIncome = data.transactions
+    const totals = computeTotals(scoped);
+    const distribution = computeCategoryDistribution(scoped, data.categories);
+    const flux = computeMonthlyFlux(data.transactions, 6);
+    const fixedIncome = scoped
       .filter((tx) => tx.type === 'income' && tx.status === 'confirmed')
       .reduce((a, tx) => a + tx.amount, 0);
     const comparison = computeMonthlyComparison(data.transactions);
     const debts = computeDebtsSummary(data.debts);
     return { totals, distribution, flux, fixedIncome, comparison, debts };
-  }, [data]);
+  }, [scoped, data.transactions, data.categories, data.debts]);
 
   if (loading) return <LoadingState label={t('dashboard.syncing')} />;
   if (error) return <ErrorState onRetry={reload} />;
@@ -53,18 +66,21 @@ export default function DashboardPage() {
   const topCategories = distribution.slice(0, 5);
   const savingsRate =
     totals.totalIncome > 0 ? Math.round((totals.available / totals.totalIncome) * 100) : 0;
+  const range = period ? monthRange(period) : null;
+  const monthQuery = range ? `&from=${range.from}&to=${range.to}` : '';
 
   return (
     <div className="space-y-gutter">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface">
             {t('dashboard.greeting', { name: firstName })}
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            {t('dashboard.subtitle')}
+            {period ? t('period.subtitleMonth', { month: formatMonthYear(period) }) : t('dashboard.subtitle')}
           </p>
         </div>
+        <MonthNavigator value={period} onChange={setPeriod} className="self-start sm:self-auto" />
       </div>
 
       {/* Hero KPIs */}
@@ -206,7 +222,7 @@ export default function DashboardPage() {
                       {topCategories.map((c) => (
                         <tr
                           key={c.categoryId}
-                          onClick={() => router.push(`/transactions?category=${c.categoryId}&type=expense`)}
+                          onClick={() => router.push(`/transactions?category=${c.categoryId}&type=expense${monthQuery}`)}
                           className="hover:bg-black/5 transition-colors cursor-pointer"
                           title={t('dashboard.viewCategoryExpenses')}
                         >

@@ -120,6 +120,19 @@ export function formatPercent(value, opts = {}) {
 }
 
 /**
+ * Formatea una clave de mes "YYYY-MM" como "Mayo de 2024" (según el locale).
+ * @param {string} key
+ * @returns {string}
+ */
+export function formatMonthYear(key) {
+  const [y, m] = String(key).split('-').map(Number);
+  if (!y || !m) return '';
+  const d = new Date(y, m - 1, 1);
+  const s = new Intl.DateTimeFormat(currentLocale, { month: 'long', year: 'numeric' }).format(d);
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/**
  * Devuelve la clave de mes "YYYY-MM" de una fecha.
  * @param {string|Date} date
  * @returns {string}

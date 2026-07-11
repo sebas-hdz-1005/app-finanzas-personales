@@ -43,6 +43,19 @@ export function filterTransactions(transactions = [], filters = {}, categoriesBy
 }
 
 /**
+ * Rango de fechas (inclusivo) para una clave de mes "YYYY-MM".
+ * @param {string} monthKey p. ej. "2024-05"
+ * @returns {{from: string, to: string}}
+ */
+export function monthRange(monthKey) {
+  const [y, m] = String(monthKey).split('-').map(Number);
+  if (!y || !m) return {};
+  const pad = (n) => String(n).padStart(2, '0');
+  const lastDay = new Date(y, m, 0).getDate(); // día 0 del mes siguiente = último día de m
+  return { from: `${y}-${pad(m)}-01`, to: `${y}-${pad(m)}-${pad(lastDay)}` };
+}
+
+/**
  * Rango de fechas para presets ("30d", "quarter", "year").
  * @param {'all'|'30d'|'quarter'|'year'} preset
  * @param {Date} [ref=new Date()]

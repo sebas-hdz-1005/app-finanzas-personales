@@ -270,6 +270,16 @@ const es = {
     balance: 'Balance',
     vsLast: 'vs. mes anterior',
   },
+  period: {
+    allTime: 'Todo el tiempo',
+    thisMonth: 'Mes actual',
+    byMonth: 'Por mes',
+    all: 'Todo',
+    prevMonth: 'Mes anterior',
+    nextMonth: 'Mes siguiente',
+    showing: 'Mostrando {month}',
+    subtitleMonth: 'Resumen de {month}',
+  },
   profile: {
     title: 'Perfil',
     subtitle: 'Datos del operador y preferencias de la cuenta.',
@@ -695,6 +705,16 @@ const en = {
     expense: 'Expenses',
     balance: 'Balance',
     vsLast: 'vs. last month',
+  },
+  period: {
+    allTime: 'All time',
+    thisMonth: 'This month',
+    byMonth: 'By month',
+    all: 'All',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    showing: 'Showing {month}',
+    subtitleMonth: '{month} overview',
   },
   profile: {
     title: 'Profile',
