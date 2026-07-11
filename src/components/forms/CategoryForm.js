@@ -58,7 +58,7 @@ export function CategoryForm({ initialValues, onSubmit, onCancel, submitting }) 
       </FormField>
 
       <FormField label={t('forms.icon')} htmlFor="cat-icon" error={errors.icon}>
-        <div className="grid grid-cols-8 gap-2" id="cat-icon">
+        <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-44 overflow-y-auto scroll-hide pr-1" id="cat-icon">
           {CATEGORY_ICONS.map((ic) => (
             <button
               key={ic}

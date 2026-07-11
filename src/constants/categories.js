@@ -19,10 +19,24 @@ export const DEFAULT_INCOME_CATEGORIES = [
   { name: 'Extra', icon: 'redeem', color: '#e06fb0' },
 ];
 
-/** Iconos disponibles para el selector de categorías. */
+/** Iconos disponibles para el selector de categorías (Material Symbols). */
 export const CATEGORY_ICONS = [
-  'home', 'shopping_cart', 'medical_services', 'commute', 'electric_bolt',
-  'sports_esports', 'credit_card', 'restaurant', 'flight', 'school',
-  'fitness_center', 'pets', 'savings', 'payments', 'trending_up', 'redeem',
-  'more_horiz', 'shopping_bag', 'local_cafe', 'phone_iphone',
+  // Hogar / vivienda
+  'home', 'apartment', 'cottage', 'bed', 'chair', 'cleaning_services',
+  // Comida
+  'restaurant', 'local_cafe', 'local_bar', 'fastfood', 'local_grocery_store', 'shopping_cart',
+  // Salud / bienestar
+  'medical_services', 'medication', 'fitness_center', 'spa', 'self_improvement', 'child_care',
+  // Transporte
+  'commute', 'directions_car', 'directions_bus', 'train', 'flight', 'local_gas_station',
+  // Servicios / tecnología
+  'electric_bolt', 'water_drop', 'wifi', 'phone_iphone', 'devices', 'router',
+  // Ocio / educación
+  'sports_esports', 'movie', 'music_note', 'sports_soccer', 'school', 'menu_book',
+  // Compras / regalos
+  'shopping_bag', 'checkroom', 'redeem', 'card_giftcard', 'celebration', 'pets',
+  // Finanzas / trabajo
+  'savings', 'payments', 'trending_up', 'account_balance', 'credit_card', 'work',
+  // Viajes / otros
+  'luggage', 'hotel', 'beach_access', 'park', 'volunteer_activism', 'more_horiz',
 ];

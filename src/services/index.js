@@ -6,5 +6,6 @@ export { goalService } from './goalService';
 export { debtService } from './debtService';
 export { userService } from './userService';
 export { seedUserData, seedCategories, clearBudgets, clearAllData } from './seedService';
+export { computeAlerts } from './alertService';
 export * as financeService from './financeService';
 export * as filterService from './filterService';

@@ -10,9 +10,10 @@ import { APP_NAME } from '@/constants';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from '@/i18n/LanguageProvider';
 import { LanguageSwitch } from './LanguageSwitch';
+import { NotificationsBell } from './NotificationsBell';
 
 /** Barra superior fija con logo, navegación, estado y menú de usuario. */
-export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
+export function TopNav({ alerts = [], onQuickAdd, onOpenMobileMenu }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, logout } = useAuth();
@@ -80,6 +81,7 @@ export function TopNav({ onQuickAdd, onOpenMobileMenu }) {
         <span className="hidden lg:block font-body-md text-body-md text-on-surface-variant mr-1">
           {t('nav.greeting', { name: firstName })}
         </span>
+        <NotificationsBell alerts={alerts} />
         <button
           type="button"
           onClick={onQuickAdd}

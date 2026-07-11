@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { TopNav } from './TopNav';
 import { SideNav } from './SideNav';
 import { MobileNav, MobileDrawer } from './MobileNav';
@@ -10,7 +10,7 @@ import { Modal } from '@/components/common/Modal';
 import { TransactionForm } from '@/components/forms/TransactionForm';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { transactionService } from '@/services';
+import { transactionService, computeAlerts } from '@/services';
 import { emitDataChanged } from '@/hooks/useDataChanged';
 import { useToast } from '@/components/common/Toast';
 import { useTranslation } from '@/i18n/LanguageProvider';
@@ -21,6 +21,7 @@ export function AppShell({ children }) {
   const toast = useToast();
   const { t } = useTranslation();
   const { data } = useFinancialData();
+  const alerts = useMemo(() => computeAlerts(data), [data]);
   const [quickOpen, setQuickOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -42,7 +43,11 @@ export function AppShell({ children }) {
   return (
     <>
       <GlowBackground />
-      <TopNav onQuickAdd={() => setQuickOpen(true)} onOpenMobileMenu={() => setDrawerOpen(true)} />
+      <TopNav
+        alerts={alerts}
+        onQuickAdd={() => setQuickOpen(true)}
+        onOpenMobileMenu={() => setDrawerOpen(true)}
+      />
       <SideNav />
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
