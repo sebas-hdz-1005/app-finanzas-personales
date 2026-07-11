@@ -7,7 +7,7 @@ import { useTranslation } from '@/i18n/LanguageProvider';
 import { goalStatusLabel } from '@/i18n/options';
 import { emitDataChanged } from '@/hooks/useDataChanged';
 import { goalService } from '@/services';
-import { computeGoalProgress } from '@/services/financeService';
+import { computeGoalPlan } from '@/services/financeService';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
@@ -115,7 +115,8 @@ export default function GoalsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
           {data.goals.map((goal) => {
-            const p = computeGoalProgress(goal);
+            const p = computeGoalPlan(goal);
+            const showPlan = goal.status === 'active' && p.remaining > 0;
             return (
               <Card key={goal.id} accent={goal.status === 'completed' ? 'success' : 'none'} className="flex flex-col">
                 <div className="flex justify-between items-start mb-3">
@@ -134,19 +135,38 @@ export default function GoalsPage() {
                   {t('goals.objective', { date: formatDate(goal.targetDate) })}
                 </p>
 
-                <div className="flex items-baseline gap-2 mb-2">
-                  <MoneyText value={goal.currentAmount} currency={currency} tone="cyan" className="text-headline-md" />
+                <div className="flex items-baseline gap-2 mb-2 flex-wrap">
+                  <MoneyText value={goal.currentAmount} currency={currency} tone="cyan" className="text-headline-md break-words" />
                   <span className="font-data-mono text-outline text-data-mono">
                     / <MoneyText value={goal.targetAmount} currency={currency} tone="neutral" className="text-data-mono" />
                   </span>
                 </div>
                 <ProgressBar value={p.percent} tone={goal.status === 'completed' ? 'success' : 'cyan'} height="h-2" />
-                <div className="flex justify-between items-center mt-auto pt-3">
+                <div className="flex justify-between items-center pt-3 gap-2 flex-wrap">
                   <span className="font-data-mono text-data-mono text-primary-fixed">{p.percent.toFixed(0)}%</span>
                   <span className="font-data-mono text-[12px] text-outline">
                     {t('goals.remaining', { amount: formatCurrency(p.remaining, currency) })}
                   </span>
                 </div>
+
+                {/* Plan de ahorro mensual */}
+                {showPlan && (
+                  <div className="mt-4 pt-3 border-t border-black/5">
+                    <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2">
+                      <Icon name="savings" className="text-primary-fixed text-[18px] shrink-0" />
+                      <span className="font-data-mono text-[13px] text-primary-fixed break-words">
+                        {p.overdue
+                          ? t('goals.overdue', { amount: formatCurrency(p.monthlyNeeded, currency) })
+                          : t('goals.monthlySaving', { amount: formatCurrency(p.monthlyNeeded, currency) })}
+                      </span>
+                    </div>
+                    {!p.overdue && p.monthsLeft > 0 && (
+                      <p className="text-[11px] text-outline mt-1 font-data-mono">
+                        {t('goals.monthsLeft', { months: p.monthsLeft })}
+                      </p>
+                    )}
+                  </div>
+                )}
               </Card>
             );
           })}

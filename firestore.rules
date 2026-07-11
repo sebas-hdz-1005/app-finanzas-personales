@@ -63,6 +63,12 @@ service cloud.firestore {
       allow create, update: if ownsIncoming();
     }
 
+    // ── Deudas ───────────────────────────────────────────────
+    match /debts/{id} {
+      allow read, delete: if ownsResource();
+      allow create, update: if ownsIncoming();
+    }
+
     // Todo lo demás queda denegado por defecto.
     match /{document=**} {
       allow read, write: if false;

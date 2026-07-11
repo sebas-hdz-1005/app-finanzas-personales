@@ -1,42 +1,23 @@
 'use client';
 
 import { Icon } from '@/components/common/Icon';
-import { formatLedgerTimestamp, formatAmount } from '@/utils/format';
+import { formatDate, formatAmount } from '@/utils/format';
 import { useTranslation } from '@/i18n/LanguageProvider';
 
-function StatusCell({ tx, t }) {
+function statusMeta(tx, t) {
   if (tx.type === 'income') {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="status-dot bg-primary-fixed shadow-[0_0_8px_rgba(124,108,240,0.6)]" />
-        <span className="text-primary-fixed">{t('transactions.statusIncoming')}</span>
-      </div>
-    );
+    return { dot: 'bg-secondary-fixed', label: t('transactions.statusIncoming'), color: 'text-secondary-fixed' };
   }
   if (tx.status === 'pending') {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="status-dot bg-error shadow-[0_0_8px_rgba(215,106,106,0.6)]" />
-        <span className="text-error">{t('transactions.statusPending')}</span>
-      </div>
-    );
+    return { dot: 'bg-tertiary', label: t('transactions.statusPending'), color: 'text-tertiary' };
   }
-  return (
-    <div className="flex items-center gap-2">
-      <span className="status-dot bg-secondary-fixed shadow-[0_0_8px_rgba(56,169,126,0.6)]" />
-      <span className="text-secondary-fixed">{t('transactions.statusConfirmed')}</span>
-    </div>
-  );
+  return { dot: 'bg-primary-fixed', label: t('transactions.statusConfirmed'), color: 'text-primary-fixed' };
 }
 
 /**
- * Tabla de transacciones estilo "Transaction Ledger".
- * Responsive: tabla en desktop, tarjetas en móvil.
- * @param {object} props
- * @param {Array} props.rows transacciones con `balance`
- * @param {Map<string,object>} props.categoriesById
- * @param {(tx:object)=>void} props.onEdit
- * @param {(tx:object)=>void} props.onDelete
+ * Tabla de transacciones. Compacta para que quepa en laptops sin scroll
+ * horizontal (el saldo corriente sólo se muestra en pantallas muy anchas).
+ * Responsive: tabla en escritorio (lg+), tarjetas en móvil/tablet.
  */
 export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
   const { t } = useTranslation();
@@ -44,52 +25,55 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
 
   return (
     <>
-      {/* Desktop */}
-      <div className="hidden md:block overflow-x-auto scroll-hide">
+      {/* Escritorio (lg+) */}
+      <div className="hidden lg:block overflow-x-auto scroll-hide">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface-container-highest/50 border-b border-black/10">
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colStatus')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colTimestamp')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colCategory')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline">{t('transactions.colEntity')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline text-right">{t('transactions.colAmount')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline text-right">{t('transactions.colBalance')}</th>
-              <th className="py-4 px-6 font-label-caps text-label-caps text-outline text-right">{t('transactions.colActions')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline">{t('transactions.colStatus')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline">{t('transactions.colTimestamp')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline">{t('transactions.colCategory')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline">{t('transactions.colEntity')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline text-right">{t('transactions.colAmount')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline text-right hidden 2xl:table-cell">{t('transactions.colBalance')}</th>
+              <th className="py-3 px-4 font-label-caps text-label-caps text-outline text-right w-[80px]">{t('transactions.colActions')}</th>
             </tr>
           </thead>
           <tbody className="font-data-mono text-data-mono divide-y divide-black/5">
             {rows.map((tx) => {
               const cat = catOf(tx.categoryId);
+              const s = statusMeta(tx, t);
               return (
                 <tr key={tx.id} className="ledger-row group">
-                  <td className="py-4 px-6">
-                    <StatusCell tx={tx} t={t} />
+                  <td className="py-3 px-4">
+                    <span className="inline-flex items-center gap-2">
+                      <span className={`status-dot ${s.dot}`} />
+                      <span className={`${s.color} text-[11px]`}>{s.label}</span>
+                    </span>
                   </td>
-                  <td className="py-4 px-6 text-on-surface-variant whitespace-nowrap">
-                    {formatLedgerTimestamp(tx.createdAt || tx.transactionDate)}
+                  <td className="py-3 px-4 text-on-surface-variant whitespace-nowrap text-[13px]">
+                    {formatDate(tx.transactionDate)}
                   </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
-                      <Icon name={cat?.icon || 'more_horiz'} className="text-primary-fixed-dim text-[20px]" />
-                      <span>{cat?.name || t('transactions.noCategory')}</span>
-                    </div>
+                  <td className="py-3 px-4">
+                    <span className="inline-flex items-center gap-2 max-w-[150px]">
+                      <Icon name={cat?.icon || 'more_horiz'} className="text-primary-fixed-dim text-[18px] shrink-0" />
+                      <span className="truncate">{cat?.name || t('transactions.noCategory')}</span>
+                    </span>
                   </td>
-                  <td className="py-4 px-6 max-w-[240px]">
+                  <td className="py-3 px-4 max-w-[220px]">
                     <span className="text-on-surface block truncate">{tx.title}</span>
-                    <span className="text-[10px] text-outline opacity-50">TXID: {String(tx.id).slice(0, 8)}</span>
                   </td>
-                  <td className={`py-4 px-6 text-right ${tx.type === 'income' ? 'text-secondary-fixed font-bold' : 'text-error'}`}>
+                  <td className={`py-3 px-4 text-right whitespace-nowrap ${tx.type === 'income' ? 'text-secondary-fixed font-bold' : 'text-error'}`}>
                     {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount)}
                   </td>
-                  <td className="py-4 px-6 text-right text-on-surface tabular-nums">
+                  <td className="py-3 px-4 text-right text-on-surface tabular-nums whitespace-nowrap hidden 2xl:table-cell">
                     {formatAmount(tx.balance, { showSign: false })}
                   </td>
-                  <td className="py-4 px-6 text-right whitespace-nowrap">
+                  <td className="py-3 px-4 text-right whitespace-nowrap">
                     <button
                       type="button"
                       onClick={() => onEdit?.(tx)}
-                      className="text-outline hover:text-primary-fixed transition-colors mr-3"
+                      className="text-outline hover:text-primary-fixed transition-colors mr-2"
                       aria-label={`${t('common.edit')} ${tx.title}`}
                     >
                       <Icon name="edit" className="text-[18px]" />
@@ -110,10 +94,11 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
         </table>
       </div>
 
-      {/* Móvil: tarjetas */}
-      <div className="md:hidden divide-y divide-black/5">
+      {/* Móvil / tablet: tarjetas */}
+      <div className="lg:hidden divide-y divide-black/5">
         {rows.map((tx) => {
           const cat = catOf(tx.categoryId);
+          const s = statusMeta(tx, t);
           return (
             <div key={tx.id} className="p-4 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-black/5 flex items-center justify-center shrink-0">
@@ -121,20 +106,23 @@ export function LedgerTable({ rows = [], categoriesById, onEdit, onDelete }) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-on-surface font-body-md truncate">{tx.title}</p>
-                <p className="text-[11px] text-outline font-data-mono">
-                  {cat?.name || t('transactions.noCategory')} · {formatLedgerTimestamp(tx.transactionDate).slice(0, 10)}
+                <p className="text-[11px] text-outline font-data-mono flex items-center gap-1.5 truncate">
+                  <span className={`status-dot ${s.dot}`} />
+                  <span className="truncate">
+                    {cat?.name || t('transactions.noCategory')} · {formatDate(tx.transactionDate)}
+                  </span>
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className={`font-data-mono ${tx.type === 'income' ? 'text-secondary-fixed' : 'text-error'}`}>
+                <p className={`font-data-mono whitespace-nowrap ${tx.type === 'income' ? 'text-secondary-fixed' : 'text-error'}`}>
                   {formatAmount(tx.type === 'income' ? tx.amount : -tx.amount)}
                 </p>
-                <div className="flex gap-2 justify-end mt-1">
+                <div className="flex gap-3 justify-end mt-1">
                   <button type="button" onClick={() => onEdit?.(tx)} aria-label={t('common.edit')} className="text-outline">
-                    <Icon name="edit" className="text-[16px]" />
+                    <Icon name="edit" className="text-[17px]" />
                   </button>
                   <button type="button" onClick={() => onDelete?.(tx)} aria-label={t('common.delete')} className="text-outline">
-                    <Icon name="delete" className="text-[16px]" />
+                    <Icon name="delete" className="text-[17px]" />
                   </button>
                 </div>
               </div>

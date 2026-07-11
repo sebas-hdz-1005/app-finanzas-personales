@@ -49,6 +49,15 @@ export const goalSchema = z.object({
   status: z.enum(['active', 'completed', 'paused']).default('active'),
 });
 
+export const debtSchema = z.object({
+  name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
+  type: z.enum(['credit_card', 'loan', 'mortgage', 'personal', 'other']).default('credit_card'),
+  initialAmount: money.refine((v) => v > 0, 'El monto inicial debe ser mayor a 0'),
+  currentAmount: money.refine((v) => v >= 0, 'No puede ser negativo'),
+  monthlyPayment: money.refine((v) => v > 0, 'La cuota mensual debe ser mayor a 0'),
+  interestRate: money.refine((v) => v >= 0, 'No puede ser negativo').default(0),
+});
+
 export const profileSchema = z.object({
   name: z.string().trim().min(2, 'El nombre es obligatorio').max(80),
   currency: z.string().min(3).max(3),

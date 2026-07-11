@@ -31,6 +31,14 @@ export const GOAL_STATUSES = [
   { value: 'paused', label: 'Pausada' },
 ];
 
+export const DEBT_TYPES = [
+  { value: 'credit_card', label: 'Tarjeta de crédito' },
+  { value: 'loan', label: 'Préstamo' },
+  { value: 'mortgage', label: 'Hipoteca' },
+  { value: 'personal', label: 'Deuda personal' },
+  { value: 'other', label: 'Otra' },
+];
+
 export const CURRENCIES = [
   { value: 'MXN', label: 'Peso mexicano (MXN)' },
   { value: 'USD', label: 'Dólar (USD)' },
@@ -49,4 +57,5 @@ export const COLLECTIONS = {
   transactions: 'transactions',
   budgets: 'budgets',
   savingGoals: 'savingGoals',
+  debts: 'debts',
 };

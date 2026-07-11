@@ -44,8 +44,13 @@ export function StatCard({ label, value, currency, tone = 'cyan', icon, breakdow
         <span className="font-label-caps text-label-caps text-outline uppercase">{label}</span>
         <Icon name={icon} className={t.icon} />
       </div>
-      <h3 className={cn('font-display-lg text-display-lg mb-2 tabular-nums break-words', t.value)}>
-        {formatCurrency(value, currency, { compact: Math.abs(value) >= 100000 })}
+      <h3
+        className={cn(
+          'font-display-lg text-[1.75rem] sm:text-[2rem] xl:text-[2.5rem] leading-tight mb-2 tabular-nums break-words',
+          t.value,
+        )}
+      >
+        {formatCurrency(value, currency)}
       </h3>
       {breakdown && (
         <div className="flex gap-4 border-t border-black/5 pt-4 mt-4">

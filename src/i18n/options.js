@@ -21,7 +21,14 @@ export const budgetPeriodOptions = (t) =>
 export const goalStatusOptions = (t) =>
   ['active', 'completed', 'paused'].map((v) => ({ value: v, label: t(`options.goalStatus.${v}`) }));
 
+export const debtTypeOptions = (t) =>
+  ['credit_card', 'loan', 'mortgage', 'personal', 'other'].map((v) => ({
+    value: v,
+    label: t(`options.debtType.${v}`),
+  }));
+
 /** Etiqueta traducida individual. */
 export const accountTypeLabel = (t, v) => t(`options.accountType.${v}`);
 export const budgetPeriodLabel = (t, v) => t(`options.budgetPeriod.${v}`);
 export const goalStatusLabel = (t, v) => t(`options.goalStatus.${v}`);
+export const debtTypeLabel = (t, v) => t(`options.debtType.${v}`);

@@ -9,9 +9,13 @@ import {
   computeTotals,
   computeCategoryDistribution,
   computeMonthlyFlux,
+  computeMonthlyComparison,
+  computeDebtsSummary,
 } from '@/services/financeService';
 import { Card } from '@/components/common/Card';
 import { StatCard, DataNode } from '@/components/financial/StatCard';
+import { MonthlyComparison } from '@/components/financial/MonthlyComparison';
+import { MoneyText } from '@/components/financial/MoneyText';
 import { DonutChart } from '@/components/charts/DonutChart';
 import { Badge } from '@/components/common/Badge';
 import { Icon } from '@/components/common/Icon';
@@ -34,7 +38,9 @@ export default function DashboardPage() {
     const fixedIncome = data.transactions
       .filter((tx) => tx.type === 'income' && tx.status === 'confirmed')
       .reduce((a, tx) => a + tx.amount, 0);
-    return { totals, distribution, flux, fixedIncome };
+    const comparison = computeMonthlyComparison(data.transactions);
+    const debts = computeDebtsSummary(data.debts);
+    return { totals, distribution, flux, fixedIncome, comparison, debts };
   }, [data]);
 
   if (loading) return <LoadingState label={t('dashboard.syncing')} />;
@@ -119,6 +125,32 @@ export default function DashboardPage() {
         </Card>
       ) : (
         <>
+          {/* Comparativa mensual + resumen de deuda */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+            <div className="lg:col-span-2">
+              <MonthlyComparison comparison={model.comparison} currency={currency} />
+            </div>
+            <Card accent={model.debts.totalOwed > 0 ? 'error' : 'none'} className="flex flex-col justify-between">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-label-caps text-label-caps text-outline uppercase">{t('debts.totalOwed')}</p>
+                  <MoneyText
+                    value={model.debts.totalOwed}
+                    currency={currency}
+                    tone={model.debts.totalOwed > 0 ? 'expense' : 'neutral'}
+                    className="text-headline-lg break-words"
+                  />
+                </div>
+                <Icon name="credit_card" className="text-error opacity-50" />
+              </div>
+              <Link href="/debts" className="mt-4">
+                <Button variant="outline" size="sm" icon="visibility" fullWidth>
+                  {t('common.viewAll')}
+                </Button>
+              </Link>
+            </Card>
+          </div>
+
           {/* Donut + tablas */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
             <Card className="lg:col-span-4 flex flex-col items-center justify-center min-h-[400px]">
@@ -215,7 +247,12 @@ export default function DashboardPage() {
             <DataNode icon="account_balance_wallet" label={t('dashboard.activeAccounts')} value={`${data.accounts.length}`} tone="cyan" />
             <DataNode icon="savings" label={t('dashboard.savingsRateShort')} value={`${savingsRate}%`} tone="success" />
             <DataNode icon="flag" label={t('dashboard.activeGoals')} value={`${data.goals.filter((g) => g.status === 'active').length}`} tone="cyan" />
-            <DataNode icon="donut_small" label={t('dashboard.budgets')} value={`${data.budgets.length}`} tone="neutral" />
+            <DataNode
+              icon="credit_card"
+              label={t('debts.title')}
+              value={`${data.debts.length}`}
+              tone={model.debts.totalOwed > 0 ? 'error' : 'neutral'}
+            />
           </div>
         </>
       )}

@@ -7,7 +7,7 @@ import { useFinancialData } from '@/hooks/useFinancialData';
 import { useTranslation } from '@/i18n/LanguageProvider';
 import { LanguageSwitch } from '@/components/layout/LanguageSwitch';
 import { emitDataChanged } from '@/hooks/useDataChanged';
-import { categoryService, seedUserData } from '@/services';
+import { categoryService, seedUserData, clearAllData } from '@/services';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
@@ -32,6 +32,22 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  const handleClearAll = async () => {
+    setClearing(true);
+    try {
+      await clearAllData(user.uid);
+      emitDataChanged();
+      toast.success(t('toasts.dataCleared'));
+      setClearOpen(false);
+    } catch (err) {
+      toast.error(err?.message || t('toasts.deleteError'));
+    } finally {
+      setClearing(false);
+    }
+  };
 
   const handleSeed = async () => {
     setSeeding(true);
@@ -185,13 +201,24 @@ export default function SettingsPage() {
         )}
       </Card>
 
-      {/* Sesión */}
+      {/* Zona de peligro */}
       <Card accent="error" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="font-headline-md text-headline-md text-error mb-1">{t('settings.clearAllTitle')}</h3>
+          <p className="font-body-md text-body-md text-on-surface-variant">{t('settings.clearAllDesc')}</p>
+        </div>
+        <Button variant="danger" icon="delete_forever" onClick={() => setClearOpen(true)} loading={clearing}>
+          {t('settings.clearAllBtn')}
+        </Button>
+      </Card>
+
+      {/* Sesión */}
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{t('settings.sessionTitle')}</h3>
           <p className="font-body-md text-body-md text-on-surface-variant">{t('settings.sessionDesc')}</p>
         </div>
-        <Button variant="danger" icon="logout" onClick={handleLogout}>
+        <Button variant="outline" icon="logout" onClick={handleLogout}>
           {t('nav.logout')}
         </Button>
       </Card>
@@ -207,6 +234,16 @@ export default function SettingsPage() {
         title={t('settings.deleteCatTitle')}
         message={deleting ? t('settings.deleteCatMsg', { name: deleting.name }) : ''}
         loading={submitting}
+      />
+
+      <ConfirmDialog
+        open={clearOpen}
+        onCancel={() => setClearOpen(false)}
+        onConfirm={handleClearAll}
+        title={t('settings.clearAllConfirmTitle')}
+        message={t('settings.clearAllConfirmMsg')}
+        confirmLabel={t('settings.clearAllBtn')}
+        loading={clearing}
       />
     </div>
   );

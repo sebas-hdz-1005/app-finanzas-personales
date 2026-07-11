@@ -8,6 +8,11 @@ import {
   computeMonthlyFlux,
   computeBudgetDrift,
   computeGoalProgress,
+  computeGoalPlan,
+  computeDebtPlan,
+  computeDebtsSummary,
+  computeMonthlyComparison,
+  monthsUntil,
   withRunningBalance,
 } from '@/services/financeService';
 
@@ -127,6 +132,102 @@ describe('computeGoalProgress', () => {
     const done = computeGoalProgress({ targetAmount: 1000, currentAmount: 1500 });
     expect(done.percent).toBe(100);
     expect(done.remaining).toBe(0);
+  });
+});
+
+describe('monthsUntil / computeGoalPlan', () => {
+  it('cuenta meses hasta la fecha objetivo', () => {
+    expect(monthsUntil('2024-08-01', new Date('2024-05-01'))).toBe(3);
+    expect(monthsUntil('2024-01-01', new Date('2024-05-01'))).toBe(0); // pasada → 0
+  });
+
+  it('calcula el ahorro mensual necesario', () => {
+    const ref = new Date('2024-05-01');
+    const plan = computeGoalPlan(
+      { targetAmount: 1200, currentAmount: 200, targetDate: '2024-09-01' },
+      ref,
+    );
+    // remaining 1000, 4 meses → 250/mes
+    expect(plan.remaining).toBe(1000);
+    expect(plan.monthsLeft).toBe(4);
+    expect(plan.monthlyNeeded).toBe(250);
+  });
+
+  it('si la meta venció y falta dinero, pide todo lo restante', () => {
+    const ref = new Date('2024-10-01');
+    const plan = computeGoalPlan(
+      { targetAmount: 1000, currentAmount: 400, targetDate: '2024-09-01' },
+      ref,
+    );
+    expect(plan.overdue).toBe(true);
+    expect(plan.monthlyNeeded).toBe(600);
+  });
+});
+
+describe('computeDebtPlan', () => {
+  it('sin interés: meses = deuda / cuota (redondeo arriba)', () => {
+    const plan = computeDebtPlan({ initialAmount: 1000, currentAmount: 1000, monthlyPayment: 300 });
+    expect(plan.monthsLeft).toBe(4); // ceil(1000/300)
+    expect(plan.feasible).toBe(true);
+    expect(plan.payoffDate).toBeTruthy();
+  });
+
+  it('calcula progreso a partir de lo ya pagado', () => {
+    const plan = computeDebtPlan({ initialAmount: 1000, currentAmount: 250, monthlyPayment: 250 });
+    expect(plan.paid).toBe(750);
+    expect(plan.percent).toBe(75);
+  });
+
+  it('con interés: cuota que no cubre el interés → no factible', () => {
+    // deuda 10000, 2% mensual → interés 200; cuota 150 < 200
+    const plan = computeDebtPlan({
+      initialAmount: 10000,
+      currentAmount: 10000,
+      monthlyPayment: 150,
+      interestRate: 24, // 24% anual = 2% mensual
+    });
+    expect(plan.feasible).toBe(false);
+    expect(plan.monthsLeft).toBe(Infinity);
+  });
+
+  it('con interés factible: interés total positivo', () => {
+    const plan = computeDebtPlan({
+      initialAmount: 10000,
+      currentAmount: 10000,
+      monthlyPayment: 1000,
+      interestRate: 12,
+    });
+    expect(plan.feasible).toBe(true);
+    expect(plan.monthsLeft).toBeGreaterThan(10);
+    expect(plan.totalInterest).toBeGreaterThan(0);
+  });
+
+  it('summary agrega deuda total y cuota total', () => {
+    const s = computeDebtsSummary([
+      { initialAmount: 1000, currentAmount: 1000, monthlyPayment: 200 },
+      { initialAmount: 500, currentAmount: 300, monthlyPayment: 100 },
+    ]);
+    expect(s.totalOwed).toBe(1300);
+    expect(s.totalMonthly).toBe(300);
+    expect(s.count).toBe(2);
+  });
+});
+
+describe('computeMonthlyComparison', () => {
+  it('compara mes actual vs anterior con % de cambio', () => {
+    const ref = new Date('2024-05-15');
+    const txs = [
+      { type: 'income', amount: 1000, transactionDate: '2024-05-03' },
+      { type: 'expense', amount: 400, transactionDate: '2024-05-10' },
+      { type: 'income', amount: 800, transactionDate: '2024-04-05' },
+      { type: 'expense', amount: 200, transactionDate: '2024-04-20' },
+    ];
+    const c = computeMonthlyComparison(txs, ref);
+    expect(c.current.income).toBe(1000);
+    expect(c.current.expense).toBe(400);
+    expect(c.previous.income).toBe(800);
+    expect(c.delta.income).toBe(25); // (1000-800)/800
+    expect(c.delta.expense).toBe(100); // (400-200)/200
   });
 });
 

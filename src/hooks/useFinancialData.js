@@ -8,10 +8,11 @@ import {
   transactionService,
   budgetService,
   goalService,
+  debtService,
 } from '@/services';
 import { useDataChanged } from './useDataChanged';
 
-const EMPTY = { accounts: [], categories: [], transactions: [], budgets: [], goals: [] };
+const EMPTY = { accounts: [], categories: [], transactions: [], budgets: [], goals: [], debts: [] };
 
 /**
  * Carga los datos financieros del usuario actual con estados de carga/error y
@@ -41,14 +42,15 @@ export function useFinancialData() {
     setLoading(true);
     setError(null);
     try {
-      const [accounts, categories, transactions, budgets, goals] = await Promise.all([
+      const [accounts, categories, transactions, budgets, goals, debts] = await Promise.all([
         accountService.list(user.uid),
         categoryService.list(user.uid),
         transactionService.list(user.uid),
         budgetService.list(user.uid),
         goalService.list(user.uid),
+        debtService.list(user.uid),
       ]);
-      if (mounted.current) setData({ accounts, categories, transactions, budgets, goals });
+      if (mounted.current) setData({ accounts, categories, transactions, budgets, goals, debts });
     } catch (err) {
       if (mounted.current) setError(err instanceof Error ? err : new Error('Error al cargar'));
     } finally {

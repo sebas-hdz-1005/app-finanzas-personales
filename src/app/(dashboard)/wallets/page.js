@@ -108,7 +108,7 @@ export default function WalletsPage() {
       <Card accent="cyan" className="flex items-center justify-between">
         <div>
           <p className="font-label-caps text-label-caps text-outline uppercase">{t('wallets.netWorth')}</p>
-          <MoneyText value={netWorth} currency={currency} tone="cyan" className="text-display-lg" />
+          <MoneyText value={netWorth} currency={currency} tone="cyan" className="text-[1.75rem] sm:text-[2.25rem] leading-tight break-words" />
         </div>
         <Icon name="account_balance_wallet" className="text-primary-fixed text-5xl opacity-50" />
       </Card>
@@ -168,7 +168,7 @@ export default function WalletsPage() {
                 </p>
                 <div className="mt-auto pt-4 border-t border-black/5">
                   <p className="text-[10px] font-label-caps text-outline uppercase">{t('wallets.currentBalance')}</p>
-                  <MoneyText value={balance} currency={acc.currency} tone="auto" className="text-headline-md" />
+                  <MoneyText value={balance} currency={acc.currency} tone="auto" className="text-headline-md break-words" />
                   <p className="text-[11px] text-outline mt-1 font-data-mono">
                     {t('wallets.movementsCount', { count: txCountByAccount.get(acc.id) || 0 })}
                   </p>

@@ -6,6 +6,7 @@ export const NAV_ITEMS = [
   { key: 'transactions', href: '/transactions', icon: 'receipt_long' },
   { key: 'budgets', href: '/budgets', icon: 'donut_small' },
   { key: 'goals', href: '/goals', icon: 'flag' },
+  { key: 'debts', href: '/debts', icon: 'credit_card' },
   { key: 'settings', href: '/settings', icon: 'settings' },
 ];
 

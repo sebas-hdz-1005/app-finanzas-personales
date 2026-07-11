@@ -22,6 +22,7 @@ export const categoryRepository = factory(COLLECTIONS.categories);
 export const transactionRepository = factory(COLLECTIONS.transactions);
 export const budgetRepository = factory(COLLECTIONS.budgets);
 export const goalRepository = factory(COLLECTIONS.savingGoals);
+export const debtRepository = factory(COLLECTIONS.debts);
 
 export const repositories = {
   users: userRepository,
@@ -30,4 +31,5 @@ export const repositories = {
   transactions: transactionRepository,
   budgets: budgetRepository,
   savingGoals: goalRepository,
+  debts: debtRepository,
 };

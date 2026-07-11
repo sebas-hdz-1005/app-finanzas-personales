@@ -186,6 +186,163 @@ export function computeGoalProgress(goal) {
   };
 }
 
+/** Meses completos entre `ref` y `date` (>= 0). */
+export function monthsUntil(date, ref = new Date()) {
+  const t = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(t.getTime())) return 0;
+  const months = (t.getFullYear() - ref.getFullYear()) * 12 + (t.getMonth() - ref.getMonth());
+  return Math.max(months, 0);
+}
+
+/** Devuelve una fecha ISO (YYYY-MM-DD) sumando `n` meses a `ref`. */
+export function addMonthsISO(n, ref = new Date()) {
+  if (!Number.isFinite(n)) return null;
+  const d = new Date(ref.getFullYear(), ref.getMonth() + n, ref.getDate());
+  const pad = (x) => String(x).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/**
+ * Plan de una meta: cuánto ahorrar por mes para llegar a la fecha objetivo.
+ * Si queda menos tiempo (un mes sin ahorrar), `monthlyNeeded` sube solo.
+ * @param {object} goal
+ * @param {Date} [ref=new Date()]
+ */
+export function computeGoalPlan(goal, ref = new Date()) {
+  const { ratio, percent, remaining } = computeGoalProgress(goal);
+  const months = monthsUntil(goal.targetDate, ref);
+  let monthlyNeeded;
+  if (remaining <= 0) monthlyNeeded = 0;
+  else if (months <= 0) monthlyNeeded = remaining; // vencida o este mes → todo lo restante
+  else monthlyNeeded = round2(remaining / months);
+  return { ratio, percent, remaining, monthsLeft: months, monthlyNeeded, overdue: months <= 0 && remaining > 0 };
+}
+
+/**
+ * Plan de pago de una deuda. Calcula meses restantes, fecha de liquidación,
+ * progreso e interés total (si hay tasa). Con tasa usa la fórmula de amortización.
+ * @param {object} debt {initialAmount,currentAmount,monthlyPayment,interestRate}
+ * @param {Date} [ref=new Date()]
+ */
+export function computeDebtPlan(debt, ref = new Date()) {
+  const current = Number(debt.currentAmount) || 0;
+  const initial = Number(debt.initialAmount) || current || 0;
+  const payment = Number(debt.monthlyPayment) || 0;
+  const annualRate = Number(debt.interestRate) || 0; // % anual
+  const r = annualRate / 100 / 12; // tasa mensual
+  const paid = Math.max(initial - current, 0);
+  const progress = initial > 0 ? Math.min(paid / initial, 1) : 0;
+
+  let monthsLeft = 0;
+  let feasible = true;
+  let totalInterest = 0;
+
+  if (current <= 0) {
+    monthsLeft = 0;
+  } else if (payment <= 0) {
+    feasible = false;
+    monthsLeft = Infinity;
+  } else if (r > 0) {
+    if (payment <= current * r) {
+      // La cuota no cubre ni el interés → nunca se paga.
+      feasible = false;
+      monthsLeft = Infinity;
+    } else {
+      monthsLeft = Math.ceil(-Math.log(1 - (r * current) / payment) / Math.log(1 + r));
+      totalInterest = round2(payment * monthsLeft - current);
+    }
+  } else {
+    monthsLeft = Math.ceil(current / payment);
+  }
+
+  const payoffDate = feasible && Number.isFinite(monthsLeft) ? addMonthsISO(monthsLeft, ref) : null;
+  return {
+    current: round2(current),
+    initial: round2(initial),
+    payment: round2(payment),
+    paid: round2(paid),
+    progress: round2(progress),
+    percent: round2(progress * 100),
+    monthsLeft,
+    feasible,
+    totalInterest,
+    payoffDate,
+  };
+}
+
+/**
+ * Totales agregados de una lista de deudas.
+ * @param {Array<object>} debts
+ */
+export function computeDebtsSummary(debts = [], ref = new Date()) {
+  let totalOwed = 0;
+  let totalMonthly = 0;
+  let maxMonths = 0;
+  for (const d of debts) {
+    const plan = computeDebtPlan(d, ref);
+    totalOwed += plan.current;
+    totalMonthly += plan.payment;
+    if (Number.isFinite(plan.monthsLeft)) maxMonths = Math.max(maxMonths, plan.monthsLeft);
+  }
+  return { totalOwed: round2(totalOwed), totalMonthly: round2(totalMonthly), maxMonths, count: debts.length };
+}
+
+/**
+ * Comparativa del mes actual vs. el mes anterior.
+ * @param {Array<object>} transactions
+ * @param {Date} [ref=new Date()]
+ */
+export function computeMonthlyComparison(transactions = [], ref = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  const keyOf = (y, m) => `${y}-${pad(m + 1)}`;
+  const curKey = keyOf(ref.getFullYear(), ref.getMonth());
+  const prevD = new Date(ref.getFullYear(), ref.getMonth() - 1, 1);
+  const prevKey = keyOf(prevD.getFullYear(), prevD.getMonth());
+
+  const blank = () => ({ income: 0, expense: 0 });
+  const cur = blank();
+  const prev = blank();
+
+  for (const tx of transactions) {
+    const key =
+      typeof tx.transactionDate === 'string' && /^\d{4}-\d{2}/.test(tx.transactionDate)
+        ? tx.transactionDate.slice(0, 7)
+        : null;
+    const bucket = key === curKey ? cur : key === prevKey ? prev : null;
+    if (!bucket) continue;
+    const amt = Number(tx.amount) || 0;
+    if (tx.type === 'income') bucket.income += amt;
+    else bucket.expense += amt;
+  }
+
+  const pct = (now, before) => {
+    if (before === 0) return now === 0 ? 0 : 100;
+    return round2(((now - before) / Math.abs(before)) * 100);
+  };
+
+  const current = {
+    monthIndex: ref.getMonth(),
+    income: round2(cur.income),
+    expense: round2(cur.expense),
+    balance: round2(cur.income - cur.expense),
+  };
+  const previous = {
+    monthIndex: prevD.getMonth(),
+    income: round2(prev.income),
+    expense: round2(prev.expense),
+    balance: round2(prev.income - prev.expense),
+  };
+  return {
+    current,
+    previous,
+    delta: {
+      income: pct(current.income, previous.income),
+      expense: pct(current.expense, previous.expense),
+      balance: pct(current.balance, previous.balance),
+    },
+  };
+}
+
 /**
  * Añade un saldo corriente (running balance) a una lista de transacciones,
  * ordenadas de más reciente a más antigua (como en el ledger del diseño).

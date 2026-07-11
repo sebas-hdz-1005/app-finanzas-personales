@@ -6,7 +6,7 @@ import { useFinancialData } from '@/hooks/useFinancialData';
 import { useTranslation } from '@/i18n/LanguageProvider';
 import { budgetPeriodLabel } from '@/i18n/options';
 import { emitDataChanged } from '@/hooks/useDataChanged';
-import { budgetService } from '@/services';
+import { budgetService, clearBudgets } from '@/services';
 import { computeBudgetDrift } from '@/services/financeService';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Card } from '@/components/common/Card';
@@ -33,6 +33,21 @@ export default function BudgetsPage() {
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+
+  const handleClearAll = async () => {
+    setSubmitting(true);
+    try {
+      await clearBudgets(user.uid);
+      emitDataChanged();
+      toast.success(t('toasts.budgetsCleared'));
+      setClearOpen(false);
+    } catch (err) {
+      toast.error(err?.message || t('toasts.deleteError'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const drift = useMemo(
     () => computeBudgetDrift(data.budgets, data.transactions, data.categories),
@@ -82,15 +97,22 @@ export default function BudgetsPage() {
         title={t('budgets.title')}
         subtitle={t('budgets.subtitle')}
         actions={
-          <Button
-            icon="add"
-            onClick={() => {
-              setEditing(null);
-              setFormOpen(true);
-            }}
-          >
-            {t('budgets.newBudget')}
-          </Button>
+          <>
+            {drift.length > 0 && (
+              <Button variant="danger" icon="delete_sweep" onClick={() => setClearOpen(true)}>
+                {t('budgets.clearAll')}
+              </Button>
+            )}
+            <Button
+              icon="add"
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              {t('budgets.newBudget')}
+            </Button>
+          </>
         }
       />
 
@@ -170,6 +192,16 @@ export default function BudgetsPage() {
         onConfirm={handleDelete}
         title={t('budgets.deleteTitle')}
         message={deleting ? t('budgets.deleteMsg', { name: deleting.categoryName }) : ''}
+        loading={submitting}
+      />
+
+      <ConfirmDialog
+        open={clearOpen}
+        onCancel={() => setClearOpen(false)}
+        onConfirm={handleClearAll}
+        title={t('budgets.clearAllTitle')}
+        message={t('budgets.clearAllMsg')}
+        confirmLabel={t('budgets.clearAll')}
         loading={submitting}
       />
     </div>

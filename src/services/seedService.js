@@ -4,6 +4,7 @@ import {
   transactionRepository,
   budgetRepository,
   goalRepository,
+  debtRepository,
 } from '@/repositories';
 import { DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from '@/constants/categories';
 import { DEFAULT_CURRENCY } from '@/constants';
@@ -132,6 +133,19 @@ export async function seedUserData(userId, opts = {}) {
     });
   }
 
+  // Deuda de ejemplo.
+  const existingDebts = await debtRepository.list(userId);
+  if (existingDebts.length === 0) {
+    await debtRepository.create(userId, {
+      name: 'Tarjeta de crédito',
+      type: 'credit_card',
+      initialAmount: 20000,
+      currentAmount: 13936,
+      monthlyPayment: 2000,
+      interestRate: 24,
+    });
+  }
+
   // Recalcular saldo de la cuenta principal.
   const allTx = await transactionRepository.list(userId);
   const delta = allTx.reduce(
@@ -143,4 +157,38 @@ export async function seedUserData(userId, opts = {}) {
   });
 
   return { seeded: true };
+}
+
+/** Elimina todos los registros de un repositorio para el usuario. */
+async function clearRepo(repo, userId) {
+  const records = await repo.list(userId);
+  await Promise.all(records.map((r) => repo.remove(userId, r.id)));
+  return records.length;
+}
+
+/** Borra todos los presupuestos del usuario. */
+export async function clearBudgets(userId) {
+  const count = await clearRepo(budgetRepository, userId);
+  return { count };
+}
+
+/**
+ * Borra TODOS los datos financieros del usuario (no el perfil ni la sesión).
+ * @param {string} userId
+ */
+export async function clearAllData(userId) {
+  const repos = [
+    transactionRepository,
+    budgetRepository,
+    goalRepository,
+    debtRepository,
+    categoryRepository,
+    accountRepository,
+  ];
+  let total = 0;
+  for (const repo of repos) {
+    // eslint-disable-next-line no-await-in-loop
+    total += await clearRepo(repo, userId);
+  }
+  return { total };
 }
