@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { useTranslation } from '@/i18n/LanguageProvider';
@@ -35,6 +35,22 @@ export default function TransactionsPage() {
 
   const [filters, setFilters] = useState({ type: 'all', search: '', preset: '30d', categoryId: 'all' });
   const [page, setPage] = useState(1);
+
+  // Filtro inicial desde la URL (?category=ID&type=expense), p. ej. al llegar
+  // desde "Gastos por categoría" del panel.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get('category');
+    const type = params.get('type');
+    if (category || type) {
+      setFilters((f) => ({
+        ...f,
+        categoryId: category || f.categoryId,
+        type: type === 'income' || type === 'expense' ? type : f.type,
+        preset: 'all', // mostrar todos los movimientos de esa categoría
+      }));
+    }
+  }, []);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);

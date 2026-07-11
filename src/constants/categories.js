@@ -4,19 +4,19 @@
  */
 export const DEFAULT_EXPENSE_CATEGORIES = [
   { name: 'Hogar', icon: 'home', color: '#7c6cf0' },
-  { name: 'Alimentación', icon: 'shopping_cart', color: '#38a97e' },
-  { name: 'Salud', icon: 'medical_services', color: '#e08a8a' },
-  { name: 'Transporte', icon: 'commute', color: '#9b8cf5' },
-  { name: 'Servicios', icon: 'electric_bolt', color: '#2f9e75' },
-  { name: 'Entretenimiento', icon: 'sports_esports', color: '#6d5ce0' },
-  { name: 'Deuda', icon: 'credit_card', color: '#f0a878' },
-  { name: 'Otros', icon: 'more_horiz', color: '#a8a5bd' },
+  { name: 'Alimentación', icon: 'shopping_cart', color: '#59b85f' },
+  { name: 'Salud', icon: 'medical_services', color: '#e0728c' },
+  { name: 'Transporte', icon: 'commute', color: '#4aa3e0' },
+  { name: 'Servicios', icon: 'electric_bolt', color: '#e0a53f' },
+  { name: 'Entretenimiento', icon: 'sports_esports', color: '#9b6dd6' },
+  { name: 'Deuda', icon: 'credit_card', color: '#e07a5f' },
+  { name: 'Otros', icon: 'more_horiz', color: '#7c8aa5' },
 ];
 
 export const DEFAULT_INCOME_CATEGORIES = [
-  { name: 'Salario', icon: 'payments', color: '#38a97e' },
-  { name: 'Inversiones', icon: 'trending_up', color: '#7c6cf0' },
-  { name: 'Extra', icon: 'redeem', color: '#9b8cf5' },
+  { name: 'Salario', icon: 'payments', color: '#2fae9e' },
+  { name: 'Inversiones', icon: 'trending_up', color: '#26a5b8' },
+  { name: 'Extra', icon: 'redeem', color: '#e06fb0' },
 ];
 
 /** Iconos disponibles para el selector de categorías. */

@@ -14,16 +14,24 @@ export const COLORS = {
   surfaceContainer: '#efedf9',
 };
 
-/** Paleta cíclica para categorías/segmentos de gráficos. */
+/** Paleta cíclica para categorías/segmentos de gráficos (hues distintos, legibles en claro). */
 export const CHART_PALETTE = [
-  '#7c6cf0', // cyan
-  '#38a97e', // lime
-  '#e08a8a', // red
-  '#9b8cf5', // light cyan
-  '#2f9e75', // lime dim
-  '#a8a5bd', // outline/gris
-  '#f0a878', // tertiary
-  '#6d5ce0', // primary container
+  '#7c6cf0', // lavanda
+  '#2fae9e', // teal
+  '#e0728c', // rosa
+  '#e0a53f', // ámbar
+  '#4aa3e0', // azul cielo
+  '#e07a5f', // coral
+  '#9b6dd6', // púrpura
+  '#59b85f', // verde
+  '#e06fb0', // magenta
+  '#5c6bc0', // índigo
+  '#d98b3a', // naranja
+  '#26a5b8', // cian
+  '#c05f8f', // malva
+  '#8aa15c', // oliva
+  '#38a97e', // menta
+  '#7c8aa5', // pizarra
 ];
 
 /**

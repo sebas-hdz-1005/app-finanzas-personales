@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { useTranslation } from '@/i18n/LanguageProvider';
@@ -28,6 +29,7 @@ import { formatCurrency } from '@/utils/format';
 export default function DashboardPage() {
   const { currency, profile, user } = useAuth();
   const { t, months } = useTranslation();
+  const router = useRouter();
   const { data, loading, error, reload } = useFinancialData();
   const firstName = (profile?.name || user?.displayName || t('nav.operator')).split(' ')[0];
 
@@ -202,11 +204,17 @@ export default function DashboardPage() {
                     </thead>
                     <tbody className="divide-y divide-black/5 font-data-mono text-data-mono">
                       {topCategories.map((c) => (
-                        <tr key={c.categoryId} className="hover:bg-black/5 transition-colors">
+                        <tr
+                          key={c.categoryId}
+                          onClick={() => router.push(`/transactions?category=${c.categoryId}&type=expense`)}
+                          className="hover:bg-black/5 transition-colors cursor-pointer"
+                          title={t('dashboard.viewCategoryExpenses')}
+                        >
                           <td className="py-4 text-on-surface">
                             <div className="flex items-center gap-3">
-                              <Icon name={c.icon} className="text-primary-fixed text-[18px]" />
-                              {c.name}
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
+                              <Icon name={c.icon} className="text-on-surface-variant text-[18px]" />
+                              <span className="truncate">{c.name}</span>
                             </div>
                           </td>
                           <td className="py-4 text-right text-outline">{c.percent.toFixed(1)}%</td>

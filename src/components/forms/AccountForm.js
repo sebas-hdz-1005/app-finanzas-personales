@@ -43,7 +43,13 @@ export function AccountForm({ initialValues, defaultCurrency = 'MXN', onSubmit, 
           <Select id="acc-currency" value={values.currency} onChange={(e) => setField('currency', e.target.value)} options={CURRENCIES} />
         </FormField>
       </div>
-      <FormField label={t('forms.initialBalance')} htmlFor="acc-balance" error={errors.initialBalance} required>
+      <FormField
+        label={values.type === 'credit' ? t('forms.creditLimit') : t('forms.initialBalance')}
+        htmlFor="acc-balance"
+        error={errors.initialBalance}
+        hint={values.type === 'credit' ? t('forms.creditLimitHint') : undefined}
+        required
+      >
         <Input id="acc-balance" type="number" step="0.01" inputMode="decimal" value={values.initialBalance} onChange={(e) => setField('initialBalance', e.target.value)} placeholder="0.00" error={errors.initialBalance} />
       </FormField>
       <div className="flex gap-3 pt-2">
