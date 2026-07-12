@@ -138,13 +138,13 @@ export default function DebtsPage() {
               const paidOff = plan.current <= 0;
               return (
                 <Card key={debt.id} accent={paidOff ? 'success' : plan.feasible ? 'none' : 'error'} className="flex flex-col">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex justify-between items-start mb-4 gap-2">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-11 h-11 rounded-lg bg-error/10 flex items-center justify-center shrink-0">
                         <Icon name={TYPE_ICONS[debt.type] || 'credit_card'} className="text-error" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-headline-md text-headline-md text-on-surface truncate">{debt.name}</h3>
+                        <h3 className="font-headline-md text-headline-md text-on-surface break-words leading-tight line-clamp-2">{debt.name}</h3>
                         <p className="font-label-caps text-[10px] text-outline uppercase truncate">
                           {debtTypeLabel(t, debt.type)}
                           {debt.accountId && accountsById.get(debt.accountId)

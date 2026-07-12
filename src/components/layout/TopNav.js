@@ -51,7 +51,7 @@ export function TopNav({ alerts = [], onQuickAdd, onOpenMobileMenu }) {
         </button>
         <Link
           href="/dashboard"
-          className="font-headline-lg text-headline-lg font-bold text-surface-tint tracking-tight"
+          className="font-headline-lg text-[19px] sm:text-2xl md:text-headline-lg font-bold text-surface-tint tracking-tight whitespace-nowrap leading-none"
         >
           {APP_NAME}
         </Link>

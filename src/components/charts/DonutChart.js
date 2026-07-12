@@ -62,21 +62,21 @@ export function DonutChart({ segments = [], centerLabel = 'TOTAL', total = 0, cu
           );
         })}
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8 pointer-events-none">
         {active ? (
           <>
-            <span className="font-label-caps text-[11px] uppercase tracking-wide truncate max-w-full" style={{ color: active.color }}>
+            <span className="font-label-caps text-[10px] uppercase tracking-wide truncate max-w-full" style={{ color: active.color }}>
               {active.label}
             </span>
-            <span className="font-headline-md text-headline-md text-on-surface tabular-nums">
+            <span className="font-headline-md text-[20px] sm:text-[22px] leading-none text-on-surface tabular-nums">
               {formatCurrency(active.value, currency, { compact: true })}
             </span>
             <span className="font-data-mono text-[12px] text-outline">{(active.fraction * 100).toFixed(1)}%</span>
           </>
         ) : (
           <>
-            <span className="font-data-mono text-[11px] text-outline uppercase tracking-widest">{centerLabel}</span>
-            <span className="font-headline-lg text-headline-lg text-on-surface tabular-nums">
+            <span className="font-data-mono text-[10px] text-outline uppercase tracking-widest">{centerLabel}</span>
+            <span className="font-headline-lg text-[20px] sm:text-[26px] leading-none text-on-surface tabular-nums">
               {formatCurrency(total, currency, { compact: true })}
             </span>
           </>

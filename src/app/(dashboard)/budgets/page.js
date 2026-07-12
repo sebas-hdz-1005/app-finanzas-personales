@@ -137,20 +137,20 @@ export default function BudgetsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
           {drift.map((b) => (
             <Card key={b.id} accent={b.breached ? 'error' : 'none'}>
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex justify-between items-start mb-4 gap-2">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className="w-11 h-11 rounded-lg flex items-center justify-center"
+                    className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${b.categoryColor}1a` }}
                   >
                     <Icon name={b.categoryIcon} style={{ color: b.categoryColor }} />
                   </div>
-                  <div>
-                    <h3 className="font-headline-md text-headline-md text-on-surface">{b.categoryName}</h3>
+                  <div className="min-w-0">
+                    <h3 className="font-headline-md text-headline-md text-on-surface truncate">{b.categoryName}</h3>
                     <p className="font-label-caps text-[10px] text-outline uppercase">{periodLabel(b.period)}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <button type="button" onClick={() => { setEditing(b); setFormOpen(true); }} className="text-outline hover:text-primary-fixed" aria-label={t('common.edit')}>
                     <Icon name="edit" className="text-[18px]" />
                   </button>
@@ -160,15 +160,15 @@ export default function BudgetsPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-baseline mb-2">
-                <MoneyText value={b.spent} currency={currency} tone="expense" className="text-headline-md" />
+              <div className="flex flex-wrap items-baseline gap-x-2 mb-2">
+                <MoneyText value={b.spent} currency={currency} tone="expense" className="text-headline-md break-words" />
                 <span className="font-data-mono text-data-mono text-outline">
                   / {' '}
                   <MoneyText value={b.limit} currency={currency} tone="neutral" className="text-data-mono" />
                 </span>
               </div>
               <ProgressBar value={b.percent} tone={b.breached ? 'error' : b.percent > 80 ? 'cyan' : 'success'} height="h-2" />
-              <div className="flex justify-between items-center mt-3">
+              <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 mt-3">
                 <Badge tone={b.breached ? 'error' : 'success'}>{t('budgets.used', { pct: b.percent.toFixed(0) })}</Badge>
                 <span className="font-data-mono text-[12px] text-outline">
                   {b.breached ? t('budgets.exceeded') : t('budgets.remaining')}:{' '}
