@@ -9,6 +9,8 @@ import {
   signOut,
   sendPasswordResetEmail,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 import { getFirebase } from '@/lib/firebase/config';
 
@@ -38,6 +40,14 @@ export async function signUp(name, email, password) {
   const { auth } = getFirebase();
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   if (name) await updateProfile(cred.user, { displayName: name });
+  return toPublicUser(cred.user);
+}
+
+export async function signInWithGoogle() {
+  const { auth } = getFirebase();
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  const cred = await signInWithPopup(auth, provider);
   return toPublicUser(cred.user);
 }
 

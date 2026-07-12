@@ -66,6 +66,24 @@ export function AuthProvider({ children }) {
     }
   }, [loadProfile]);
 
+  const loginWithGoogle = useCallback(async () => {
+    try {
+      const u = await authAdapter.signInWithGoogle();
+      // Perfil + datos base en el primer ingreso (idempotente para usuarios existentes).
+      await userService.ensureProfile(u.uid, {
+        name: u.displayName || 'Usuario',
+        email: u.email || '',
+        photoURL: u.photoURL,
+        currency: DEFAULT_CURRENCY,
+      });
+      await seedUserData(u.uid, { currency: DEFAULT_CURRENCY });
+      await loadProfile(u);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: mapAuthError(error) };
+    }
+  }, [loadProfile]);
+
   const logout = useCallback(async () => {
     await authAdapter.signOutUser();
     setProfile(null);
@@ -90,12 +108,13 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!user,
       currency: profile?.currency || DEFAULT_CURRENCY,
       login,
+      loginWithGoogle,
       register,
       logout,
       resetPassword,
       refreshProfile,
     }),
-    [user, profile, loading, login, register, logout, resetPassword, refreshProfile],
+    [user, profile, loading, login, loginWithGoogle, register, logout, resetPassword, refreshProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

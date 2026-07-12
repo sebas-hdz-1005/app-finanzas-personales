@@ -23,6 +23,13 @@ const FIREBASE_ERRORS = {
   'auth/weak-password': 'La contraseña es demasiado débil (mínimo 6 caracteres).',
   'auth/too-many-requests': 'Demasiados intentos. Inténtalo más tarde.',
   'auth/network-request-failed': 'Error de red. Revisa tu conexión.',
+  'auth/popup-closed-by-user': 'Cerraste la ventana de Google antes de terminar.',
+  'auth/cancelled-popup-request': 'Se canceló el inicio de sesión.',
+  'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Permítela e inténtalo de nuevo.',
+  'auth/account-exists-with-different-credential':
+    'Ya existe una cuenta con ese email usando otro método de acceso.',
+  'auth/operation-not-allowed': 'Este método de acceso no está habilitado.',
+  'auth/unauthorized-domain': 'Dominio no autorizado en Firebase Authentication.',
 };
 
 /**

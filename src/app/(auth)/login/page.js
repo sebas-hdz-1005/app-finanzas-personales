@@ -8,6 +8,7 @@ import { FormField } from '@/components/forms/FormField';
 import { Input } from '@/components/forms/Input';
 import { Button } from '@/components/common/Button';
 import { Icon } from '@/components/common/Icon';
+import { GoogleButton } from '@/components/common/GoogleButton';
 import { useAuth } from '@/features/auth/AuthContext';
 import { loginSchema } from '@/validations/auth';
 import { validateWith } from '@/utils/validation';
@@ -15,13 +16,14 @@ import { isDemoBackend } from '@/lib/backend';
 import { useTranslation } from '@/i18n/LanguageProvider';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const router = useRouter();
   const { t, lang } = useTranslation();
   const [values, setValues] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const setField = (name, value) => setValues((v) => ({ ...v, [name]: value }));
 
@@ -37,6 +39,15 @@ export default function LoginPage() {
     setLoading(true);
     const res = await login(data.email, data.password);
     setLoading(false);
+    if (res.ok) router.replace('/dashboard');
+    else setFormError(res.error);
+  };
+
+  const handleGoogle = async () => {
+    setFormError('');
+    setGoogleLoading(true);
+    const res = await loginWithGoogle();
+    setGoogleLoading(false);
     if (res.ok) router.replace('/dashboard');
     else setFormError(res.error);
   };
@@ -90,6 +101,16 @@ export default function LoginPage() {
             {t('auth.establishUplink')}
           </Button>
         </form>
+
+        <div className="flex items-center gap-3 my-5">
+          <span className="h-px bg-black/10 flex-1" />
+          <span className="font-label-caps text-[10px] text-outline uppercase">{t('auth.or')}</span>
+          <span className="h-px bg-black/10 flex-1" />
+        </div>
+
+        <GoogleButton onClick={handleGoogle} loading={googleLoading} disabled={loading}>
+          {t('auth.continueWithGoogle')}
+        </GoogleButton>
 
         <div className="mt-6 flex justify-between items-center px-1">
           <Link

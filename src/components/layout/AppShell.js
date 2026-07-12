@@ -10,6 +10,7 @@ import { Modal } from '@/components/common/Modal';
 import { TransactionForm } from '@/components/forms/TransactionForm';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useFinancialData } from '@/hooks/useFinancialData';
+import { useIdleLogout } from '@/hooks/useIdleLogout';
 import { transactionService, computeAlerts } from '@/services';
 import { emitDataChanged } from '@/hooks/useDataChanged';
 import { useToast } from '@/components/common/Toast';
@@ -22,6 +23,7 @@ export function AppShell({ children }) {
   const { t } = useTranslation();
   const { data } = useFinancialData();
   const alerts = useMemo(() => computeAlerts(data), [data]);
+  useIdleLogout();
   const [quickOpen, setQuickOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);

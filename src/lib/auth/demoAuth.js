@@ -108,6 +108,28 @@ export async function signUp(name, email, password) {
   return pub;
 }
 
+export async function signInWithGoogle() {
+  // En demo no hay Google real: se simula un usuario "Google" para probar el flujo.
+  ensureDemoUser();
+  const users = readUsers();
+  let user = users.find((u) => u.uid === 'demo-google');
+  if (!user) {
+    user = {
+      uid: 'demo-google',
+      email: 'usuario.google@gmail.com',
+      name: 'Usuario Google',
+      photoURL: null,
+      passwordHash: hash('google'),
+    };
+    users.push(user);
+    writeUsers(users);
+  }
+  window.localStorage.setItem(SESSION_KEY, user.uid);
+  const pub = toPublicUser(user);
+  emit(pub);
+  return pub;
+}
+
 export async function signOutUser() {
   if (browser()) window.localStorage.removeItem(SESSION_KEY);
   emit(null);

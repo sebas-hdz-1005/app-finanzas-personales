@@ -23,6 +23,13 @@ test.describe('Autenticación y protección de rutas', () => {
     await expect(page.getByText(/Ingresos Totales/i)).toBeVisible();
   });
 
+  test('login con Google (simulado en demo)', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByRole('button', { name: /Continuar con Google/i }).click();
+    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page.getByRole('heading', { level: 1, name: /Hola/i })).toBeVisible();
+  });
+
   test('login demo y logout', async ({ page }) => {
     await page.goto('/login');
     await page.getByText(/usar credenciales demo/i).click();
