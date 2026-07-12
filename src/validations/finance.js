@@ -49,14 +49,30 @@ export const goalSchema = z.object({
   status: z.enum(['active', 'completed', 'paused']).default('active'),
 });
 
+const positiveInt = z
+  .union([z.number(), z.string()])
+  .transform((v) => Math.floor(typeof v === 'number' ? v : parseInt(String(v), 10)))
+  .pipe(z.number({ invalid_type_error: 'Valor inválido' }).int().min(1, 'Debe ser al menos 1'));
+
+const optionalDay = z
+  .union([z.number(), z.string()])
+  .optional()
+  .transform((v) => {
+    if (v === '' || v == null) return null;
+    const n = Math.floor(Number(v));
+    return Number.isFinite(n) ? n : null;
+  })
+  .refine((v) => v === null || (v >= 1 && v <= 31), 'Día inválido (1-31)');
+
 export const debtSchema = z.object({
   name: z.string().trim().min(2, 'El nombre es obligatorio').max(60),
   type: z.enum(['credit_card', 'loan', 'mortgage', 'personal', 'other']).default('credit_card'),
   accountId: z.string().optional().or(z.literal('')),
   initialAmount: money.refine((v) => v > 0, 'El monto inicial debe ser mayor a 0'),
   currentAmount: money.refine((v) => v >= 0, 'No puede ser negativo'),
-  monthlyPayment: money.refine((v) => v > 0, 'La cuota mensual debe ser mayor a 0'),
+  installments: positiveInt,
   interestRate: money.refine((v) => v >= 0, 'No puede ser negativo').default(0),
+  paymentDay: optionalDay,
 });
 
 export const profileSchema = z.object({

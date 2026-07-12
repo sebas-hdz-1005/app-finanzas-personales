@@ -188,8 +188,14 @@ export default function DebtsPage() {
                     </div>
                   </div>
 
-                  {!paidOff && plan.feasible && plan.payoffDate && (
-                    <p className="mt-3 text-[12px] text-secondary-fixed font-data-mono flex items-center gap-1">
+                  {!paidOff && plan.nextDue && (
+                    <p className="mt-3 text-[12px] text-primary-fixed font-data-mono flex items-center gap-1">
+                      <Icon name="event" className="text-[15px]" />
+                      {t('debts.nextPayment', { date: formatDate(plan.nextDue) })}
+                    </p>
+                  )}
+                  {!paidOff && plan.payoffDate && (
+                    <p className="mt-1 text-[12px] text-secondary-fixed font-data-mono flex items-center gap-1">
                       <Icon name="event_available" className="text-[15px]" />
                       {t('debts.payoffDate', { date: formatDate(plan.payoffDate) })}
                     </p>

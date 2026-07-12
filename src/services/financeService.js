@@ -251,32 +251,69 @@ export function computeGoalPlan(goal, ref = new Date()) {
 }
 
 /**
- * Plan de pago de una deuda. Calcula meses restantes, fecha de liquidación,
- * progreso e interés total (si hay tasa). Con tasa usa la fórmula de amortización.
- * @param {object} debt {initialAmount,currentAmount,monthlyPayment,interestRate}
+ * Próxima fecha de pago (ISO) a partir de un día del mes (1-31).
+ * Si el día ya pasó este mes, devuelve el del mes siguiente.
+ * @param {number} day 1-31
+ * @param {Date} [ref=new Date()]
+ * @returns {string|null}
+ */
+export function nextDueDate(day, ref = new Date()) {
+  const d = Number(day);
+  if (!Number.isFinite(d) || d < 1 || d > 31) return null;
+  const pad = (n) => String(n).padStart(2, '0');
+  const lastDayOf = (y, m) => new Date(y, m + 1, 0).getDate();
+  let year = ref.getFullYear();
+  let month = ref.getMonth();
+  const dueThisMonth = Math.min(d, lastDayOf(year, month));
+  if (ref.getDate() > dueThisMonth) {
+    month += 1;
+    if (month > 11) {
+      month = 0;
+      year += 1;
+    }
+  }
+  const dueDay = Math.min(d, lastDayOf(year, month));
+  return `${year}-${pad(month + 1)}-${pad(dueDay)}`;
+}
+
+/**
+ * Plan de pago de una deuda. Modo preferente: por NÚMERO DE CUOTAS (installments)
+ * — deriva la cuota mensual (con o sin interés) y la fecha de liquidación.
+ * Retrocompatible: si no hay `installments`, usa `monthlyPayment`.
+ * @param {object} debt {initialAmount,currentAmount,installments,monthlyPayment,interestRate,paymentDay}
  * @param {Date} [ref=new Date()]
  */
 export function computeDebtPlan(debt, ref = new Date()) {
   const current = Number(debt.currentAmount) || 0;
   const initial = Number(debt.initialAmount) || current || 0;
-  const payment = Number(debt.monthlyPayment) || 0;
+  const installments = Math.floor(Number(debt.installments) || 0);
   const annualRate = Number(debt.interestRate) || 0; // % anual
   const r = annualRate / 100 / 12; // tasa mensual
   const paid = Math.max(initial - current, 0);
   const progress = initial > 0 ? Math.min(paid / initial, 1) : 0;
 
+  let payment = Number(debt.monthlyPayment) || 0;
   let monthsLeft = 0;
   let feasible = true;
   let totalInterest = 0;
 
   if (current <= 0) {
     monthsLeft = 0;
+    payment = 0;
+  } else if (installments > 0) {
+    // Modo cuotas: la cuota se deriva del saldo y el número de cuotas.
+    monthsLeft = installments;
+    if (r > 0) {
+      payment = round2((current * r) / (1 - (1 + r) ** -installments));
+    } else {
+      payment = round2(current / installments);
+    }
+    totalInterest = round2(payment * installments - current);
   } else if (payment <= 0) {
     feasible = false;
     monthsLeft = Infinity;
   } else if (r > 0) {
     if (payment <= current * r) {
-      // La cuota no cubre ni el interés → nunca se paga.
       feasible = false;
       monthsLeft = Infinity;
     } else {
@@ -295,10 +332,12 @@ export function computeDebtPlan(debt, ref = new Date()) {
     paid: round2(paid),
     progress: round2(progress),
     percent: round2(progress * 100),
+    installments,
     monthsLeft,
     feasible,
     totalInterest,
     payoffDate,
+    nextDue: nextDueDate(debt.paymentDay, ref),
   };
 }
 

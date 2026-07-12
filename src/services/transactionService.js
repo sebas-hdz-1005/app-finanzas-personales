@@ -69,4 +69,9 @@ export const transactionService = {
     if (previous?.accountId) await recalcAccountBalance(userId, previous.accountId);
     return { id };
   },
+
+  /** Marca una transacción como pagada (estado confirmado). No cambia el saldo. */
+  setStatus(userId, id, status) {
+    return transactionRepository.update(userId, id, { status });
+  },
 };

@@ -19,6 +19,7 @@ import { MonthNavigator } from '@/components/common/MonthNavigator';
 import { StatCard, DataNode } from '@/components/financial/StatCard';
 import { MonthlyComparison } from '@/components/financial/MonthlyComparison';
 import { MoneyText } from '@/components/financial/MoneyText';
+import { PendingChecklist } from '@/components/financial/PendingChecklist';
 import { DonutChart } from '@/components/charts/DonutChart';
 import { Badge } from '@/components/common/Badge';
 import { Icon } from '@/components/common/Icon';
@@ -26,12 +27,16 @@ import { Button } from '@/components/common/Button';
 import { LoadingState } from '@/components/common/Spinner';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { useToast } from '@/components/common/Toast';
+import { transactionService } from '@/services';
+import { emitDataChanged } from '@/hooks/useDataChanged';
 import { formatCurrency, monthKey, formatMonthYear } from '@/utils/format';
 
 export default function DashboardPage() {
   const { currency, profile, user } = useAuth();
   const { t, months } = useTranslation();
   const router = useRouter();
+  const toast = useToast();
   const { data, loading, error, reload } = useFinancialData();
   const firstName = (profile?.name || user?.displayName || t('nav.operator')).split(' ')[0];
 
@@ -58,14 +63,39 @@ export default function DashboardPage() {
     return { totals, distribution, flux, fixedIncome, comparison, debts };
   }, [scoped, data.transactions, data.categories, data.debts]);
 
+  const categoriesById = useMemo(
+    () => new Map(data.categories.map((c) => [c.id, c])),
+    [data.categories],
+  );
+  // Gastos pendientes (por pagar) del periodo seleccionado, para el checklist.
+  const pending = useMemo(
+    () =>
+      scoped
+        .filter((tx) => tx.type === 'expense' && tx.status === 'pending')
+        .sort((a, b) => (a.transactionDate < b.transactionDate ? -1 : 1)),
+    [scoped],
+  );
+
+  const handlePay = async (id) => {
+    try {
+      await transactionService.setStatus(user.uid, id, 'confirmed');
+      emitDataChanged();
+      toast.success(t('checklist.paidToast'));
+    } catch (err) {
+      toast.error(err?.message || t('toasts.saveError'));
+    }
+  };
+
   if (loading) return <LoadingState label={t('dashboard.syncing')} />;
   if (error) return <ErrorState onRetry={reload} />;
 
   const hasData = data.transactions.length > 0;
   const { totals, distribution, flux } = model;
   const topCategories = distribution.slice(0, 5);
+  const monthlyDebt = model.debts.totalMonthly; // suma de cuotas mensuales de deudas
+  const availableAfterDebt = Math.round((totals.available - monthlyDebt) * 100) / 100;
   const savingsRate =
-    totals.totalIncome > 0 ? Math.round((totals.available / totals.totalIncome) * 100) : 0;
+    totals.totalIncome > 0 ? Math.round((availableAfterDebt / totals.totalIncome) * 100) : 0;
   const range = period ? monthRange(period) : null;
   const monthQuery = range ? `&from=${range.from}&to=${range.to}` : '';
 
@@ -109,10 +139,18 @@ export default function DashboardPage() {
         />
         <StatCard
           label={t('dashboard.available')}
-          value={totals.available}
+          value={availableAfterDebt}
           currency={currency}
           tone="success"
           icon="verified"
+          breakdown={
+            monthlyDebt > 0
+              ? [
+                  { label: t('dashboard.netIncome'), value: formatCurrency(totals.available, currency, { compact: true }) },
+                  { label: t('dashboard.debtPayment'), value: `-${formatCurrency(monthlyDebt, currency, { compact: true })}` },
+                ]
+              : undefined
+          }
         >
           <div className="mt-4 p-3 bg-secondary-fixed/10 border border-secondary-fixed/20 rounded-lg">
             <p className="font-body-md text-body-md text-secondary-fixed">
@@ -161,6 +199,12 @@ export default function DashboardPage() {
                 </div>
                 <Icon name="credit_card" className="text-error opacity-50" />
               </div>
+              {monthlyDebt > 0 && (
+                <div className="mt-3 flex items-center justify-between text-[13px]">
+                  <span className="font-label-caps text-label-caps text-outline uppercase">{t('debts.totalMonthly')}</span>
+                  <MoneyText value={monthlyDebt} currency={currency} tone="expense" className="text-data-mono" />
+                </div>
+              )}
               <Link href="/debts" className="mt-4">
                 <Button variant="outline" size="sm" icon="visibility" fullWidth>
                   {t('common.viewAll')}
@@ -168,6 +212,16 @@ export default function DashboardPage() {
               </Link>
             </Card>
           </div>
+
+          {/* Checklist: gastos pendientes por pagar del mes */}
+          {pending.length > 0 && (
+            <PendingChecklist
+              items={pending}
+              categoriesById={categoriesById}
+              currency={currency}
+              onPay={handlePay}
+            />
+          )}
 
           {/* Donut + tablas */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">

@@ -154,8 +154,9 @@ export async function seedUserData(userId, opts = {}) {
       accountId: creditAccount.id,
       initialAmount: 15000,
       currentAmount: 13936,
-      monthlyPayment: 2000,
+      installments: 8,
       interestRate: 24,
+      paymentDay: 15,
     });
   }
 

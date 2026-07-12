@@ -11,6 +11,7 @@ import {
   computeGoalPlan,
   computeDebtPlan,
   computeDebtsSummary,
+  nextDueDate,
   computeMonthlyComparison,
   debtOwedForAccount,
   computeAccountAvailable,
@@ -203,6 +204,28 @@ describe('computeDebtPlan', () => {
     expect(plan.feasible).toBe(true);
     expect(plan.monthsLeft).toBeGreaterThan(10);
     expect(plan.totalInterest).toBeGreaterThan(0);
+  });
+
+  it('por cuotas (sin interés): cuota = saldo / cuotas, meses = cuotas', () => {
+    const plan = computeDebtPlan({ initialAmount: 12000, currentAmount: 12000, installments: 12 });
+    expect(plan.payment).toBe(1000);
+    expect(plan.monthsLeft).toBe(12);
+    expect(plan.feasible).toBe(true);
+    expect(plan.installments).toBe(12);
+  });
+
+  it('por cuotas con interés: cuota mayor que saldo/cuotas', () => {
+    const plan = computeDebtPlan({ initialAmount: 12000, currentAmount: 12000, installments: 12, interestRate: 24 });
+    expect(plan.payment).toBeGreaterThan(1000);
+    expect(plan.monthsLeft).toBe(12);
+    expect(plan.totalInterest).toBeGreaterThan(0);
+  });
+
+  it('nextDueDate devuelve el próximo día de pago', () => {
+    expect(nextDueDate(15, new Date('2024-05-10'))).toBe('2024-05-15'); // aún no pasa
+    expect(nextDueDate(15, new Date('2024-05-20'))).toBe('2024-06-15'); // ya pasó → mes siguiente
+    expect(nextDueDate(31, new Date('2024-02-10'))).toBe('2024-02-29'); // se ajusta a fin de mes
+    expect(nextDueDate(null)).toBeNull();
   });
 
   it('summary agrega deuda total y cuota total', () => {
