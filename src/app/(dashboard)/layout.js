@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/AuthContext';
 import { AppShell } from '@/components/layout/AppShell';
+import { FinancialDataProvider } from '@/features/data/FinancialDataProvider';
 import { LoadingState } from '@/components/common/Spinner';
 import { useTranslation } from '@/i18n/LanguageProvider';
 
@@ -25,5 +26,9 @@ export default function DashboardLayout({ children }) {
     );
   }
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <FinancialDataProvider>
+      <AppShell>{children}</AppShell>
+    </FinancialDataProvider>
+  );
 }
